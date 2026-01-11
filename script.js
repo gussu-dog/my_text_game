@@ -8,21 +8,33 @@ async function loadStory() {
         const data = await response.text();
         const lines = data.split("\n").filter(l => l.trim() !== ""); 
 
-        for (let i = 1; i < lines.length; i++) {
-            const cols = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(c => c.trim().replace(/"/g, ""));
+        lines.slice(1).forEach(line => {
+            const cols = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(c => c.trim().replace(/"/g, ""));
+            
             if(cols[0]) {
-                storyData[cols[0]] = {
+                const id = cols[0];
+                const scene = {
                     text: cols[1],
-                    opt1: cols[2],
-                    next1: cols[3],
-                    // G열(6)은 돌발 이벤트 ID, H열(7)은 확률 숫자
-                    chanceNext: cols[6], 
-                    chanceRate: parseFloat(cols[7]) || 0 
+                    options: [],
+                    // M열(12)과 N열(13)로 확률 데이터 이동
+                    chanceNext: cols[12], 
+                    chanceRate: parseFloat(cols[13]) || 0 
                 };
+
+                // C, E, G, I, K 열을 돌며 선택지 텍스트가 있는지 확인 (최대 5개)
+                for (let i = 2; i <= 10; i += 2) {
+                    if (cols[i] && cols[i].length > 0) {
+                        scene.options.push({
+                            label: cols[i],
+                            next: cols[i+1]
+                        });
+                    }
+                }
+                storyData[id] = scene;
             }
-        }
+        });
         showScene("1");
-    } catch (e) { console.error("데이터 로딩 실패:", e); }
+    } catch (e) { console.error("로딩 실패:", e); }
 }
 
 function showScene(sceneId) {
@@ -33,23 +45,22 @@ function showScene(sceneId) {
     const optionsElement = document.getElementById('options');
     optionsElement.innerHTML = '';
 
-    if (scene.opt1) {
-        const btn = document.createElement('button');
-        btn.innerText = scene.opt1;
-        btn.className = 'option-btn';
-        btn.onclick = () => {
-            // 0~100 사이의 주사위를 굴립니다.
+    scene.options.forEach(opt => {
+        const button = document.createElement('button');
+        button.innerText = opt.label;
+        button.className = 'option-btn';
+        button.onclick = () => {
             const dice = Math.random() * 100;
             
-            // 주사위 값이 시트에 적힌 확률(예: 30)보다 작으면 늑대 출현!
+            // 어떤 버튼을 누르든 설정된 확률에 따라 돌발 이벤트 발생 가능
             if (scene.chanceNext && dice < scene.chanceRate) {
                 showScene(scene.chanceNext);
             } else {
-                showScene(scene.next1);
+                showScene(opt.next);
             }
         };
-        optionsElement.appendChild(btn);
-    }
+        optionsElement.appendChild(button);
+    });
 }
 
 loadStory();
