@@ -16,15 +16,16 @@ async function loadStory() {
                 const scene = {
                     text: cols[1],
                     options: [],
-                    // M열(12)과 N열(13)로 확률 데이터 이동
-                    chanceNext: cols[12], 
-                    chanceRate: parseFloat(cols[13]) || 0 
+                    triggerOpt: cols[12], // M열: 확률이 발동할 선택지 번호 (1~5)
+                    chanceNext: cols[13], // N열: 돌발 이벤트 ID
+                    chanceRate: parseFloat(cols[14]) || 0 // O열: 확률
                 };
 
-                // C, E, G, I, K 열을 돌며 선택지 텍스트가 있는지 확인 (최대 5개)
+                // 선택지들을 배열에 담기
                 for (let i = 2; i <= 10; i += 2) {
                     if (cols[i] && cols[i].length > 0) {
                         scene.options.push({
+                            index: (i / 2).toString(), // 선택지 번호 (1, 2, 3...)
                             label: cols[i],
                             next: cols[i+1]
                         });
@@ -52,8 +53,9 @@ function showScene(sceneId) {
         button.onclick = () => {
             const dice = Math.random() * 100;
             
-            // 어떤 버튼을 누르든 설정된 확률에 따라 돌발 이벤트 발생 가능
-            if (scene.chanceNext && dice < scene.chanceRate) {
+            // 현재 누른 버튼의 번호가 시트의 triggerOpt와 일치할 때만 확률 계산
+            if (scene.triggerOpt === opt.index && scene.chanceNext && dice < scene.chanceRate) {
+                console.log(`${opt.index}번 선택지 확률 발동!`);
                 showScene(scene.chanceNext);
             } else {
                 showScene(opt.next);
