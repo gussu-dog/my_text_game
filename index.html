@@ -11,41 +11,34 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="main-container">
-        <div class="phone-frame">
-            <div id="list-page">
-    <div id="character-list" class="list-container"></div>
-
-    <div class="footer-settings">
-        <button onclick="clearAllSaves()" class="reset-all-btn">모든 대화 기록 초기화</button>
-    </div>
-</div>
-    <div class="chat-header">
-        <div class="contact-name">대화 상대 선택</div>
-    </div>
-    <div id="loading-spinner" class="loading-container">
-    <div class="loading-text">
-        Loading<span class="dots">...</span>
-    </div>
-</div>
-    <div id="character-list" class="list-container" style="display: none;">
+    <div class="phone-frame">
+        <div id="loading-spinner" class="loading-container">
+            <div class="loading-text">Loading<span class="dots"></span></div>
         </div>
-</div>
 
-            <div id="game-page" style="display: none;">
-                <div class="chat-header">
-                    <span id="back-btn" class="back-btn">〈</span>
-                    <div id="header-name" class="contact-name">캐릭터 이름</div>
-                    <span style="visibility: hidden;">〈</span>
-                </div>
-                <div id="chat-window" class="chat-window"></div>
-                <div id="options" class="options-container"></div>
+        <div id="list-page" style="display: none;">
+            <div class="chat-header">
+                <div class="contact-name">Contact</div>
+            </div>
+            <div id="character-list" class="list-container"></div>
+            <div class="footer-settings">
+                <button onclick="clearAllSaves()" class="reset-all-btn">모든 대화 기록 초기화</button>
             </div>
         </div>
+
+        <div id="game-page" style="display: none;">
+            <div class="chat-header">
+                <div class="back-btn" id="back-btn">〈</div>
+                <div id="header-name">이름</div>
+            </div>
+            <div id="chat-window"></div>
+            <div id="options" class="options-container"></div>
+        </div>
     </div>
-    <script src="script.js"></script>
 </body>
+
 </html>
+
 
 
 
