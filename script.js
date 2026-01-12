@@ -200,3 +200,4 @@ document.getElementById('back-btn').onclick = () => {
 
 // 시작
 window.onload = loadCharacterList;
+
