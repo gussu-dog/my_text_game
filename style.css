@@ -16,29 +16,30 @@ body {
     align-items: center;
 }
 
-/* 스마트폰 프레임 디자인 */
+/* 스마트폰 프레임 내부를 흰색으로 변경 */
 .phone-frame {
     width: 320px;
     height: 580px;
-    background-color: #2b2b2b;
+    background-color: #ffffff; /* 내부 배경 흰색 */
     border: 12px solid #333;
     border-radius: 40px;
     display: flex;
     flex-direction: column;
     box-shadow: 0 20px 50px rgba(0,0,0,0.8);
     position: relative;
+    overflow: hidden;
 }
 
 .chat-header {
-    background-color: #333;
+    background-color: #f8f8f8; /* 헤더도 밝게 */
+    color: #333;
     padding: 20px 15px 10px 15px;
     text-align: center;
     font-weight: bold;
     font-size: 1.1em;
-    border-bottom: 1px solid #444;
+    border-bottom: 1px solid #eee;
 }
 
-/* 채팅창 내부 메시지 영역 */
 .chat-window {
     flex: 1;
     padding: 20px;
@@ -46,31 +47,32 @@ body {
     display: flex;
     flex-direction: column;
     gap: 15px;
+    background-color: #ffffff; /* 채팅 영역 흰색 */
 }
 
-/* 상대방 말풍선 */
+/* 상대방 말풍선 (회색) */
 .message-bubble {
-    background-color: #444;
-    color: white;
+    background-color: #f1f1f2;
+    color: #333;
     padding: 10px 14px;
     border-radius: 18px 18px 18px 4px;
     max-width: 85%;
     font-size: 14px;
     line-height: 1.5;
     align-self: flex-start;
-    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
 }
 
-/* 내 답변 말풍선 (스크립트에서 추가할 예정) */
+/* 내 말풍선 (카톡 노란색) */
 .my-message {
-    background-color: #fee500; /* 카카오톡 노란색 느낌 */
+    background-color: #fee500;
     color: #333;
     padding: 10px 14px;
     border-radius: 18px 18px 4px 18px;
     max-width: 85%;
     font-size: 14px;
     line-height: 1.5;
-    align-self: flex-end;
+    align-self: flex-end; /* 오른쪽 정렬 */
+    box-shadow: 1px 1px 3px rgba(0,0,0,0.1);
 }
 
 /* 오른쪽 컨트롤 영역 */
