@@ -1,3 +1,4 @@
+// 이 주소로 교체하세요!
 const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQd7MAwHPNY8jyOF2Fi5qFgtwnDHjjA1IzkEbN91axz8qNHIDum5T2X-zH8yZ2kqdZQC4Lj1jMYD00R/pub?gid=1156416394&single=true&output=csv";
 
 let storyData = {};
@@ -69,3 +70,4 @@ function showOptions(sceneId) {
                     const dice = Math.random() * 100;
                     if (scene.triggerOpt === opt.index && scene.chanceNext && dice < scene.chanceRate) {
                         addMessage
+
