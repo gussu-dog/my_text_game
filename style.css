@@ -63,6 +63,10 @@ body {
     font-weight: 500;
     cursor: pointer;
     transition: background 0.2s;
+    display: flex;
+    justify-content: space-between; /* 이름과 화살표를 양끝으로 */
+    align-items: center;
+    border-bottom: 1px solid #f0f0f0;
 }
 
 /* 클릭 시 피드백 */
@@ -79,6 +83,13 @@ body {
     border-radius: 50%;
     margin-right: 15px;
     display: inline-block;
+}
+
+/* 이름 옆에 생기는 꺽쇠 화살표 (>) */
+.character-item::after {
+    content: "〉";
+    color: #c7c7cc;
+    font-size: 14px;
 }
 
 /* 캐릭터 버튼 아이템 */
