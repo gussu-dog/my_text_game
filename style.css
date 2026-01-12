@@ -1,7 +1,7 @@
-/* 기본 배경 설정 */
+/* 기본 배경 설정 (이전의 어두운 회색으로 복구) */
 body {
-    background-color: #000;
-    color: #000;
+    background-color: #1a1a1a;
+    color: #fff;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     display: flex;
     justify-content: center;
@@ -10,9 +10,10 @@ body {
     margin: 0;
 }
 
+/* 휴대폰과 선택지 사이의 여백 늘림 */
 .main-container {
     display: flex;
-    gap: 30px;
+    gap: 60px; /* 30px에서 60px로 여백 증설 */
     align-items: center;
 }
 
@@ -21,7 +22,7 @@ body {
     width: 320px;
     height: 600px;
     background-color: #fff;
-    border: 10px solid #1a1a1a;
+    border: 12px solid #333; /* 프레임 색상 살짝 밝게 */
     border-radius: 45px;
     display: flex;
     flex-direction: column;
@@ -30,21 +31,19 @@ body {
     box-shadow: 0 20px 50px rgba(0,0,0,0.5);
 }
 
-/* 아이폰 상단 헤더 */
+/* 헤더: iMessage 문구 제거 */
 .chat-header {
     background-color: rgba(255, 255, 255, 0.9);
     backdrop-filter: blur(10px);
-    padding: 40px 15px 10px;
+    padding: 45px 15px 15px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 0.5px solid #ddd;
-    z-index: 10;
+    border-bottom: 1px solid #eee;
 }
 
-.back-btn { color: #007aff; font-size: 20px; cursor: pointer; width: 30px; }
-.contact-name { flex: 1; text-align: center; font-size: 13px; font-weight: 600; line-height: 1.2; }
-.i-message-tag { font-size: 10px; color: #8e8e93; font-weight: 400; }
+.back-btn { color: #7CABF9; font-size: 22px; cursor: pointer; }
+.contact-name { color: #000; font-weight: 600; font-size: 15px; }
 
 /* 채팅 창 */
 .chat-window {
@@ -82,45 +81,50 @@ body {
     border-bottom-left-radius: 5px;
 }
 
-/* 나 (아이폰 파랑) */
+/* 내 말풍선 (요청하신 #7CABF9 색상) */
 .my-message {
-    background-color: #007aff;
+    background-color: #7CABF9;
     color: #fff;
     align-self: flex-end;
-    border-bottom-right-radius: 5px;
+    border-radius: 18px;
+    border-bottom-right-radius: 4px;
+    padding: 8px 14px;
+    font-size: 15px;
 }
 
-/* 타이핑 애니메이션 점 */
+/* 타이핑 애니메이션 점 (색상 유지) */
 .dot {
     width: 6px;
     height: 6px;
-    background-color: #999;
+    background-color: #bbb;
     border-radius: 50%;
     display: inline-block;
     animation: typing-blink 1.4s infinite both;
 }
-.dot:nth-child(2) { animation-delay: 0.2s; }
-.dot:nth-child(3) { animation-delay: 0.4s; }
 
 @keyframes typing-blink {
     0%, 80%, 100% { opacity: 0.2; }
     40% { opacity: 1; }
 }
 
-/* 오른쪽 선택지 영역 */
-.controls { width: 250px; }
+/* 선택지 버튼 (요청하신 #7CABF9 색상 및 디자인) */
 .option-btn {
     width: 100%;
-    padding: 12px 18px;
-    margin-bottom: 10px;
-    background-color: #007aff;
+    padding: 14px 20px;
+    margin-bottom: 12px;
+    background-color: #7CABF9;
     color: #fff;
     border: none;
-    border-radius: 20px;
-    font-size: 14px;
+    border-radius: 25px;
+    font-size: 15px;
     font-weight: 500;
     cursor: pointer;
-    transition: transform 0.1s;
-    text-align: left;
+    transition: all 0.2s;
+    text-align: center; /* 선택지는 중앙 정렬이 깔끔합니다 */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
-.option-btn:active { transform: scale(0.95); }
+
+.option-btn:hover {
+    background-color: #6da0ed;
+    transform: translateY(-2px);
+}
