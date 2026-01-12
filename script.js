@@ -5,25 +5,44 @@ const baseSheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQd7MAwHPN
 let storyData = {};
 let historyData = [];
 
-// 캐릭터 목록 로드
 async function loadCharacterList() {
+    const spinner = document.getElementById('loading-spinner');
+    const listDiv = document.getElementById('character-list');
+
     try {
         const response = await fetch(appsScriptUrl);
         const characters = await response.json();
         
-        const listDiv = document.getElementById('character-list');
-        if (!listDiv) return;
         listDiv.innerHTML = '';
 
         characters.forEach(char => {
             const item = document.createElement('div');
             item.className = 'character-item';
-            item.innerText = char.name;
+            
+            // 프로필 사진 추가
+            const imgHtml = char.photo 
+                ? `<img src="${char.photo}" class="profile-img">` 
+                : `<div class="profile-placeholder"></div>`;
+            
+            item.innerHTML = `
+                <div class="profile-group">
+                    ${imgHtml}
+                    <span>${char.name}</span>
+                </div>
+                <span class="arrow">〉</span>
+            `;
+            
             item.onclick = () => startChat(char.name, char.gid);
             listDiv.appendChild(item);
         });
+
+        // 로딩 숨기고 목록 표시
+        spinner.style.display = 'none';
+        listDiv.style.display = 'block';
+
     } catch (e) {
-        console.error("캐릭터 목록 로드 중 오류:", e);
+        spinner.innerHTML = "<p>목록을 불러오지 못했습니다.</p>";
+        console.error(e);
     }
 }
 
@@ -170,4 +189,5 @@ document.getElementById('back-btn').onclick = () => {
 
 // 시작 시 목록 로드
 window.onload = loadCharacterList;
+
 
