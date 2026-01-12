@@ -122,7 +122,47 @@ function showOptions(sceneId) {
     });
 }
 
+// 1. 현재 시간을 "오후 2:41" 형식으로 만드는 함수
+function getCurrentTimeText() {
+    const now = new Date();
+    let hours = now.getHours();
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    const ampm = hours >= 12 ? '오후' : '오전';
+    hours = hours % 12 || 12; // 0시를 12시로 표시
+    return `${ampm} ${hours}:${minutes}`;
+}
+
+// 2. 채팅창에 시간 구분선을 추가하는 함수
+function addTimeDivider() {
+    const chatWindow = document.getElementById('chat-window');
+    const timeDiv = document.createElement('div');
+    timeDiv.className = 'chat-time';
+    timeDiv.innerText = `오늘 ${getCurrentTimeText()}`;
+    chatWindow.appendChild(timeDiv);
+}
+
+// 3. loadStory 함수 마지막 부분 수정
+async function loadStory() {
+    // ... 기존 데이터 파싱 코드 ...
+    
+    // 첫 화면 세팅
+    const chatWindow = document.getElementById('chat-window');
+    chatWindow.innerHTML = ''; 
+
+    // 게임 시작 시 첫 시간 표시
+    addTimeDivider();
+
+    if (storyData["1"]) {
+        addMessage(storyData["1"].text, 'bot');
+        showOptions("1");
+    }
+}
+
+// 4. (선택사항) 메시지가 길어지면 중간에 시간을 한 번 더 뿌려주고 싶을 때
+// showOptions 내부에서 addMessage('me') 호출 직전에 addTimeDivider()를 쓰면 됩니다.
+
 loadStory();
+
 
 
 
