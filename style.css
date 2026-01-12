@@ -2,7 +2,7 @@
 body {
     background-color: #1a1a1a;
     color: #ececec;
-    font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -21,8 +21,8 @@ body {
     width: 320px;
     height: 580px;
     background-color: #ffffff; /* 내부 배경 흰색 */
-    border: 12px solid #333;
-    border-radius: 40px;
+    border: 12px solid #1a1a1a;
+    border-radius: 45px;
     display: flex;
     flex-direction: column;
     box-shadow: 0 20px 50px rgba(0,0,0,0.8);
@@ -30,14 +30,28 @@ body {
     overflow: hidden;
 }
 
+/* 아이폰 스타일 헤더 */
 .chat-header {
-    background-color: #f8f8f8; /* 헤더도 밝게 */
-    color: #333;
-    padding: 20px 15px 10px 15px;
+    background-color: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    padding: 45px 15px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #007aff; /* 아이폰 블루 */
+    font-size: 17px;
+}
+
+.back-btn { font-size: 20px; cursor: pointer; }
+.contact-name { color: #000; font-weight: 600; font-size: 13px; text-align: center; flex: 1; }
+
+/* 채팅창 날짜/시간 */
+.chat-time {
     text-align: center;
-    font-weight: bold;
-    font-size: 1.1em;
-    border-bottom: 1px solid #eee;
+    font-size: 11px;
+    color: #8e8e93;
+    margin: 10px 0;
+    text-transform: uppercase;
 }
 
 .chat-window {
@@ -62,17 +76,14 @@ body {
     align-self: flex-start;
 }
 
-/* 내 말풍선 (카톡 노란색) */
+/* 내 말풍선 (iPhone Blue) */
 .my-message {
-    background-color: #fee500;
-    color: #333;
-    padding: 10px 14px;
-    border-radius: 18px 18px 4px 18px;
-    max-width: 85%;
-    font-size: 14px;
-    line-height: 1.5;
-    align-self: flex-end; /* 오른쪽 정렬 */
-    box-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+    background-color: #007aff;
+    color: #fff;
+    border-radius: 18px;
+    padding: 8px 14px;
+    font-size: 15px;
+    align-self: flex-end;
 }
 
 /* 오른쪽 컨트롤 영역을 더 깔끔하게 */
@@ -83,19 +94,15 @@ body {
     box-shadow: none; /* 그림자 제거 */
 }
 
+/* 오른쪽 선택지 버튼 (아이폰 버튼 느낌) */
 .option-btn {
-    width: 100%;
-    padding: 15px;
-    margin-top: 10px;
-    background-color: #fee500; /* 선택지 버튼도 내 말풍선 색상과 맞추면 통일감이 생깁니다 */
-    color: #333;
+    background-color: #007aff;
+    border-radius: 25px;
+    padding: 12px 20px;
+    font-size: 15px;
+    box-shadow: none;
     border: none;
-    border-radius: 20px; /* 더 둥글게 만들어 말풍선 느낌 강조 */
-    font-weight: bold;
-    cursor: pointer;
-    text-align: center;
-    transition: all 0.2s;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    margin-top: 8px;
 }
 
 .option-btn:hover {
