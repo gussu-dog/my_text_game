@@ -221,7 +221,16 @@ document.getElementById('back-btn').onclick = () => {
     currentCharName = "";
 };
 
+// 캐릭터 대화 초기화 (선택 사항)
+function resetChat(name) {
+    if (confirm(`${name}님과의 대화 기록을 삭제하고 처음부터 시작할까요?`)) {
+        localStorage.removeItem(getSaveKey(name));
+        startChat(name, currentGid); // 새로 시작
+    }
+}
+
 // 시작
 window.onload = loadCharacterList;
+
 
 
