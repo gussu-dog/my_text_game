@@ -6,15 +6,14 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-/* 휴대폰과 답변창 사이 간격을 명확하게 조절 */
+/* 외부 컨테이너는 이제 정렬만 담당 */
 .main-container {
     display: flex;
-    flex-direction: row; /* 가로 배치 */
-    gap: 80px;          /* 휴대폰과 답변창 사이 거리를 80px로 크게 벌림 */
+    justify-content: center;
     align-items: center;
-    padding: 20px;
 }
 
 /* 휴대폰 프레임 */
@@ -26,34 +25,36 @@ body {
     border-radius: 45px;
     display: flex;
     flex-direction: column;
-    position: relative; /* 중요: 하단 선택지의 기준점 */
+    position: relative;
     overflow: hidden;
     box-shadow: 0 20px 50px rgba(0,0,0,0.5);
 }
 
-/* 헤더 여백 축소 */
+/* 헤더 */
 .chat-header {
     background-color: rgba(255, 255, 255, 0.9);
     backdrop-filter: blur(10px);
-    padding: 20px 15px 15px; /* 위쪽 여백을 45px에서 20px로 줄였습니다 */
+    padding: 20px 15px 15px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid #eee;
+    z-index: 5;
 }
 
-.back-btn { color: #7CABF9; font-size: 20px; cursor: pointer; }
+.back-btn { color: #7CABF9; font-size: 20px; font-weight: bold; cursor: pointer; }
 .contact-name { color: #000; font-weight: 600; font-size: 15px; }
 
 /* 채팅 창 영역 */
 .chat-window {
     flex: 1;
     padding: 15px;
-    padding-bottom: 120px; /* 선택지가 가리지 않도록 아래 여백 추가 */
+    padding-bottom: 150px; /* 선택지 영역을 위해 아래 여백 충분히 */
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
+    background-color: #fff;
 }
 
 /* 하단 선택지 컨테이너 */
@@ -61,77 +62,73 @@ body {
     position: absolute;
     bottom: 0;
     width: 100%;
-    background: rgba(255, 255, 255, 0.9); /* 살짝 투명한 배경 */
-    backdrop-filter: blur(10px);
-    padding: 15px;
+    padding: 20px 15px 30px; /* 아래쪽 여백을 줘서 더 안정적으로 배치 */
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    border-top: 1px solid #eee;
+    align-items: flex-start; /* 버튼들을 왼쪽으로 정렬 */
+    gap: 10px;
+    background: linear-gradient(to top, rgba(255,255,255,1) 80%, rgba(255,255,255,0)); /* 자연스러운 그라데이션 */
 }
 
-/* 말풍선 모양의 선택지 버튼 */
+/* ★ 말풍선 모양의 선택지 버튼 (수정 핵심) ★ */
 .option-btn {
-    width: 100%;
-    padding: 12px 16px;
+    width: auto;            /* 100% 제거: 글자 길이에 맞게 */
+    max-width: 90%;         /* 너무 길어지지 않게 방지 */
+    padding: 10px 16px;
     background-color: #7CABF9;
     color: #fff;
     border: none;
-    border-radius: 20px;
-    border-bottom-left-radius: 4px; /* 말풍선 꼬리 느낌 */
+    border-radius: 18px;
+    border-bottom-left-radius: 4px; /* 말풍선 꼬리 효과 */
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
-    text-align: left; /* 왼쪽 정렬 */
-    transition: all 0.2s;
+    text-align: left;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: all 0.2s ease;
 }
 
 .option-btn:hover {
     background-color: #6da0ed;
-    transform: scale(1.02);
+    transform: translateX(5px); /* 옆으로 살짝 밀리는 효과 */
 }
 
-/* 말풍선 디자인 (기존 유지) */
-.message-bubble {
-    background-color: #e9e9eb;
-    align-self: flex-start;
-    border-radius: 18px;
-    border-bottom-left-radius: 4px;
-    padding: 8px 14px;
-    font-size: 14px;
-}
-
-/* 상대방 (연한 회색) */
+/* 상대방 메시지 */
 .message-bubble {
     background-color: #e9e9eb;
     color: #000;
     align-self: flex-start;
+    padding: 10px 14px;
+    border-radius: 18px;
     border-bottom-left-radius: 4px;
+    font-size: 14px;
+    line-height: 1.4;
+    max-width: 75%;
 }
 
+/* 내 메시지 */
 .my-message {
     background-color: #7CABF9;
     color: #fff;
     align-self: flex-end;
+    padding: 10px 14px;
     border-radius: 18px;
     border-bottom-right-radius: 4px;
-    padding: 8px 14px;
     font-size: 14px;
+    line-height: 1.4;
+    max-width: 75%;
 }
 
-/* 타이핑 애니메이션 점 */
+/* 타이핑 애니메이션 */
 .dot {
-    width: 5px;
-    height: 5px;
+    width: 5px; height: 5px;
     background-color: #bbb;
     border-radius: 50%;
     display: inline-block;
     animation: typing-blink 1.4s infinite both;
 }
-
 @keyframes typing-blink {
     0%, 80%, 100% { opacity: 0.2; }
     40% { opacity: 1; }
 }
-
