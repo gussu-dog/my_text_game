@@ -32,6 +32,30 @@ body {
     border-bottom: 1px solid #eee;
 }
 
+/* 목록 컨테이너 */
+.list-container {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    overflow-y: auto;
+}
+
+/* 캐릭터 버튼 아이템 */
+.character-item {
+    padding: 20px;
+    background-color: #f8f9fa;
+    border: 1px solid #eee;
+    border-radius: 15px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.character-item:hover {
+    background-color: #e9ecef;
+}
+
 .contact-name { color: #000; font-weight: 600; font-size: 15px; }
 .back-btn { color: #7CABF9; font-size: 20px; cursor: pointer; }
 
