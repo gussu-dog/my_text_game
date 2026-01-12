@@ -1,104 +1,65 @@
-const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQd7MAwHPNY8jyOF2Fi5qFgtwnDHjjA1IzkEbN91axz8qNHIDum5T2X-zH8yZ2kqdZQC4Lj1jMYD00R/pub?gid=1156416394&single=true&output=csv";
+// 1. 설정 영역 (본인의 정보로 수정해주세요)
+const appsScriptUrl = "https://script.google.com/macros/s/AKfycbyFG2NeAJH91wLk4InwxRSbEI_IK2glWIRRgSFbGx7_1lwnbFZ3r1M3zZ_yW9rs18inXA/exec"; // Apps Script URL
+const baseSheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQd7MAwHPNY8jyOF2Fi5qFgtwnDHjjA1IzkEbN91axz8qNHIDum5T2X-zH8yZ2kqdZQC4Lj1jMYD00R/pub?output=csv&gid=";
+
+// 탭 이름과 GID 매핑 (시트 하단 탭을 눌렀을 때 주소창 끝에 나오는 gid 번호)
+const characterConfigs = {
+    "로라": "1156416394", 
+    "캐릭터이름2": "여기에_두번째탭_GID_입력",
+    "캐릭터이름3": "여기에_세번째탭_GID_입력"
+};
 
 let storyData = {};
 let historyData = [];
 
-// 1. 메시지 추가 함수
-function addMessage(text, sender) {
-    const chatWindow = document.getElementById('chat-window');
-    const msgDiv = document.createElement('div');
-    msgDiv.className = sender === 'me' ? 'my-message' : 'message-bubble';
-    let cleanText = text.replace(/\\n/g, '<br>');
-    msgDiv.innerHTML = cleanText;
-    chatWindow.appendChild(msgDiv);
-    chatWindow.scrollTop = chatWindow.scrollHeight;
-}
+// 2. 캐릭터 목록 가져오기 (게임 시작 시 실행)
+async function loadCharacterList() {
+    try {
+        const response = await fetch(appsScriptUrl);
+        const names = await response.json();
+        
+        const listDiv = document.getElementById('character-list');
+        listDiv.innerHTML = ''; // 기존 목록 비우기
 
-// 2. 타이핑 표시
-function showTyping() {
-    const chatWin = document.getElementById('chat-window');
-    const typingDiv = document.createElement('div');
-    typingDiv.id = 'typing-indicator';
-    typingDiv.className = 'message-bubble';
-    typingDiv.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
-    chatWin.appendChild(typingDiv);
-    chatWin.scrollTop = chatWin.scrollHeight;
-    return typingDiv;
-}
-
-// 3. 가챠 로직 (ID:확률, ID:확률 파싱)
-function getGachaResult(chanceString, defaultNext) {
-    if (!chanceString || !chanceString.includes(':')) return defaultNext;
-    
-    const pools = chanceString.split(',').map(p => p.trim());
-    const dice = Math.random() * 100;
-    let cumulativeProbability = 0;
-
-    for (let pool of pools) {
-        const [nextId, probability] = pool.split(':');
-        cumulativeProbability += parseFloat(probability);
-        if (dice <= cumulativeProbability) {
-            return nextId.trim();
-        }
+        names.forEach(name => {
+            const item = document.createElement('div');
+            item.className = 'character-item'; // CSS에서 스타일을 지정해주세요
+            item.innerText = name;
+            item.onclick = () => startChat(name);
+            listDiv.appendChild(item);
+        });
+    } catch (e) {
+        console.error("목록 로드 실패:", e);
+        // 만약 Apps Script가 안될 경우를 대비해 수동 목록이라도 띄우기
+        renderManualList();
     }
-    return defaultNext; // 당첨 안 되면 기본 다음 ID로
 }
 
-// 4. 장면 실행
-async function playScene(sceneId) {
-    const scene = storyData[sceneId];
-    if (!scene) return;
-
-    const typing = showTyping();
-    setTimeout(() => {
-        if(typing.parentNode) typing.parentNode.removeChild(typing);
-        addMessage(scene.text, 'bot');
-        showOptions(sceneId);
-    }, 1000);
-}
-
-// 5. 선택지 표시 및 가챠 트리거
-function showOptions(sceneId) {
-    const scene = storyData[sceneId];
-    const optionsElement = document.getElementById('options');
-    optionsElement.innerHTML = '';
-    
-    if (!scene || !scene.options || scene.options.length === 0) {
-        if (scene.autoNext) setTimeout(() => playScene(scene.autoNext), 800);
+// 3. 대화 시작 함수
+function startChat(name) {
+    const gid = characterConfigs[name];
+    if (!gid) {
+        alert("해당 캐릭터의 시트 ID(GID) 설정이 없습니다.");
         return;
     }
 
-    scene.options.forEach(opt => {
-        const button = document.createElement('button');
-        button.innerText = opt.label;
-        button.className = 'option-btn';
-        button.onclick = () => {
-            addMessage(opt.label, 'me');
-            optionsElement.innerHTML = '';
-            
-            setTimeout(() => {
-                const typing = showTyping();
-                setTimeout(() => {
-                    if(typing.parentNode) typing.parentNode.removeChild(typing);
-                    
-                    let nextId = opt.next;
-                    // M열(chanceNext)에 가챠 설정이 있고, 트리거 번호가 맞을 때
-                    if (scene.triggerOpt === opt.index && scene.chanceNext) {
-                        nextId = getGachaResult(scene.chanceNext, opt.next);
-                    }
-                    
-                    if (storyData[nextId]) playScene(nextId);
-                }, 1000);
-            }, 500);
-        };
-        optionsElement.appendChild(button);
-    });
+    // 화면 전환
+    document.getElementById('header-name').innerText = name;
+    document.getElementById('list-page').style.display = 'none';
+    document.getElementById('game-page').style.display = 'block';
+    
+    // 기존 데이터 초기화 후 시트 로드
+    storyData = {};
+    historyData = [];
+    document.getElementById('chat-window').innerHTML = '';
+    
+    loadStory(`${baseSheetUrl}${gid}`);
 }
 
-// 6. 데이터 로드
-async function loadStory() {
+// 4. 시트 데이터 로드 로직 (기존 로직 통합)
+async function loadStory(fullUrl) {
     try {
-        const response = await fetch(sheetUrl);
+        const response = await fetch(fullUrl);
         const data = await response.text();
         const lines = data.split("\n").filter(l => l.trim() !== "");
         
@@ -111,20 +72,14 @@ async function loadStory() {
                     text: cols[1], 
                     options: [], 
                     autoNext: cols[3],
-                    triggerOpt: cols[12], // M열: 트리거할 선택지 번호 (1, 2...)
-                    chanceNext: cols[13]  // N열: 가챠 데이터 (101:20, 102:80)
+                    triggerOpt: cols[12], 
+                    chanceNext: cols[13]
                 };
-                
                 for (let i = 4; i <= 9; i += 2) { 
                     if (cols[i]) {
-                        scene.options.push({ 
-                            index: ((i-2) / 2).toString(), // 1, 2, 3...
-                            label: cols[i], 
-                            next: cols[i+1] 
-                        }); 
+                        scene.options.push({ index: ((i-2) / 2).toString(), label: cols[i], next: cols[i+1] }); 
                     }
                 }
-
                 if (id < 0) {
                     historyData.push({ id, text: cols[1], sender: cols[2] === 'me' ? 'me' : 'bot' });
                 } else {
@@ -136,7 +91,7 @@ async function loadStory() {
         historyData.sort((a, b) => a.id - b.id);
         historyData.forEach(h => addMessage(h.text, h.sender));
         if (storyData["1"]) playScene("1");
-    } catch (e) { console.error("Error:", e); }
+    } catch (e) { console.error("데이터 로드 실패:", e); }
 }
 
-loadStory();
+//
