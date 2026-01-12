@@ -251,3 +251,33 @@ body {
     flex-grow: 1; /* 남은 공간을 차지해서 중앙 느낌을 줌 */
     text-align: left; /* 화살표 옆에 적당히 떨어져 배치 */
 }
+
+/* 채팅창 스크롤 복구 */
+#chat-window {
+    flex: 1;            /* 남은 공간 모두 차지 */
+    overflow-y: auto;   /* 내용이 많아지면 스크롤 생성 */
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    height: calc(100vh - 180px); /* 헤더와 옵션창 제외한 높이 설정 */
+}
+
+/* 초기화 버튼 디자인 */
+.footer-settings {
+    padding: 20px;
+    text-align: center;
+}
+
+.reset-all-btn {
+    background: none;
+    border: none;
+    color: #8E8E93;
+    font-size: 12px;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.reset-all-btn:active {
+    color: #FF3B30; /* 클릭 시 빨간색으로 강조 */
+}
