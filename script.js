@@ -1,5 +1,5 @@
 // 1. 설정 영역 (본인의 정보로 수정해주세요)
-const appsScriptUrl = "https://script.google.com/macros/s/AKfycbyFG2NeAJH91wLk4InwxRSbEI_IK2glWIRRgSFbGx7_1lwnbFZ3r1M3zZ_yW9rs18inXA/exec"; // Apps Script URL
+const appsScriptUrl = "https://script.google.com/macros/s/AKfycbweif1QukpSxPsGCnLbcoFg2Q22p-V3DztPnhZeBT_91InpO9QXT7c17Him9ylcH9Jw5g/exec"; // Apps Script URL
 const baseSheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQd7MAwHPNY8jyOF2Fi5qFgtwnDHjjA1IzkEbN91axz8qNHIDum5T2X-zH8yZ2kqdZQC4Lj1jMYD00R/pub?output=csv&gid=";
 
 // 탭 이름과 GID 매핑 (시트 하단 탭을 눌렀을 때 주소창 끝에 나오는 gid 번호)
@@ -95,4 +95,5 @@ async function loadStory(fullUrl) {
 }
 
 //
+
 
