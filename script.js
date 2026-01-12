@@ -12,6 +12,26 @@ const characterConfigs = {
 let storyData = {};
 let historyData = [];
 
+function doGet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheets = ss.getSheets();
+  
+  // 제외하고 싶은 탭 이름들을 배열에 넣으세요
+  const excludeNames = ["설정", "메모", "가이드", "테스트"]; 
+  
+  const sheetInfo = sheets
+    .filter(sheet => !excludeNames.includes(sheet.getName())) // 제외 목록에 없는 탭만 통과
+    .map(sheet => {
+      return {
+        name: sheet.getName(),
+        gid: sheet.getSheetId().toString()
+      };
+    });
+  
+  return ContentService.createTextOutput(JSON.stringify(sheetInfo))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
 // 캐릭터 목록 로드 (GID까지 자동으로 매칭)
 async function loadCharacterList() {
     try {
@@ -101,6 +121,7 @@ async function loadStory(fullUrl) {
 }
 
 //
+
 
 
 
