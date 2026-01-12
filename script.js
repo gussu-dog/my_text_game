@@ -2,13 +2,6 @@
 const appsScriptUrl = "https://script.google.com/macros/s/AKfycbweif1QukpSxPsGCnLbcoFg2Q22p-V3DztPnhZeBT_91InpO9QXT7c17Him9ylcH9Jw5g/exec"; // Apps Script URL
 const baseSheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQd7MAwHPNY8jyOF2Fi5qFgtwnDHjjA1IzkEbN91axz8qNHIDum5T2X-zH8yZ2kqdZQC4Lj1jMYD00R/pub?output=csv&gid=";
 
-// 탭 이름과 GID 매핑 (시트 하단 탭을 눌렀을 때 주소창 끝에 나오는 gid 번호)
-const characterConfigs = {
-    "로라": "1156416394", 
-    "캐릭터이름2": "247421618",
-    "캐릭터이름3": "97907572"
-};
-
 let storyData = {};
 let historyData = [];
 
@@ -121,6 +114,7 @@ async function loadStory(fullUrl) {
 }
 
 //
+
 
 
 
