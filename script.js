@@ -1,9 +1,7 @@
-// 이 주소로 교체하세요!
 const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQd7MAwHPNY8jyOF2Fi5qFgtwnDHjjA1IzkEbN91axz8qNHIDum5T2X-zH8yZ2kqdZQC4Lj1jMYD00R/pub?gid=1156416394&single=true&output=csv";
 
 let storyData = {};
 
-// 1. 현재 시간 포맷 함수
 function getCurrentTimeText() {
     const now = new Date();
     let hours = now.getHours();
@@ -13,7 +11,6 @@ function getCurrentTimeText() {
     return `${ampm} ${hours}:${minutes}`;
 }
 
-// 2. 시간 구분선 추가 함수
 function addTimeDivider() {
     const chatWindow = document.getElementById('chat-window');
     const timeDiv = document.createElement('div');
@@ -22,7 +19,6 @@ function addTimeDivider() {
     chatWindow.appendChild(timeDiv);
 }
 
-// 3. 메시지 추가 함수
 function addMessage(text, sender) {
     const chatWindow = document.getElementById('chat-window');
     const msgDiv = document.createElement('div');
@@ -32,7 +28,6 @@ function addMessage(text, sender) {
     chatWindow.scrollTop = chatWindow.scrollHeight;
 }
 
-// 4. 타이핑 표시 함수
 function showTypingIndicator() {
     const chatWindow = document.getElementById('chat-window');
     const typingDiv = document.createElement('div');
@@ -47,12 +42,10 @@ function showTypingIndicator() {
     return typingDiv;
 }
 
-// 5. 선택지 표시 함수
 function showOptions(sceneId) {
     const scene = storyData[sceneId];
     const optionsElement = document.getElementById('options');
     optionsElement.innerHTML = '';
-
     if (!scene || !scene.options) return;
 
     scene.options.forEach(opt => {
@@ -60,14 +53,57 @@ function showOptions(sceneId) {
         button.innerText = opt.label;
         button.className = 'option-btn';
         button.onclick = () => {
-            addMessage(opt.label, 'me'); // 내 메시지 추가
-            optionsElement.innerHTML = ''; // 버튼 제거
-
+            addMessage(opt.label, 'me');
+            optionsElement.innerHTML = '';
             setTimeout(() => {
                 const typingIndicator = showTypingIndicator();
                 setTimeout(() => {
                     typingIndicator.remove();
                     const dice = Math.random() * 100;
-                    if (scene.triggerOpt === opt.index && scene.chanceNext && dice < scene.chanceRate) {
-                        addMessage
+                    const nextSceneId = (scene.triggerOpt === opt.index && scene.chanceNext && dice < scene.chanceRate) 
+                                        ? scene.chanceNext : opt.next;
+                    addMessage(storyData[nextSceneId].text, 'bot');
+                    showOptions(nextSceneId);
+                }, 1200);
+            }, 400);
+        };
+        optionsElement.appendChild(button);
+    });
+}
 
+async function loadStory() {
+    try {
+        const response = await fetch(sheetUrl);
+        const data = await response.text();
+        const lines = data.split("\n").filter(l => l.trim() !== ""); 
+
+        lines.slice(1).forEach(line => {
+            const cols = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(c => c.trim().replace(/"/g, ""));
+            if(cols[0]) {
+                const id = cols[0];
+                const scene = {
+                    text: cols[1],
+                    options: [],
+                    triggerOpt: cols[12],
+                    chanceNext: cols[13],
+                    chanceRate: parseFloat(cols[14]) || 0
+                };
+                for (let i = 2; i <= 10; i += 2) {
+                    if (cols[i]) scene.options.push({ index: (i / 2).toString(), label: cols[i], next: cols[i+1] });
+                }
+                storyData[id] = scene;
+            }
+        });
+
+        document.getElementById('chat-window').innerHTML = ''; 
+        addTimeDivider();
+        if (storyData["1"]) {
+            addMessage(storyData["1"].text, 'bot');
+            showOptions("1");
+        }
+    } catch (e) {
+        console.error("데이터 로드 실패:", e);
+    }
+}
+
+loadStory();
