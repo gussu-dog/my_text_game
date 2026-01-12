@@ -1,5 +1,5 @@
 // 1. 설정 영역
-const appsScriptUrl = "https://script.google.com/macros/s/AKfycbxQhVBD0X9e_A3pFZfZP8BH8e9fxZ09BnrwPyq-mcW_9qKRq_8KilP-fJLukOsuDWYPBA/exec"; 
+const appsScriptUrl = "https://script.google.com/macros/s/AKfycbzP0LhD-PiPMDsu4elQJj80FqCZ2C6MGeZchxKOx-FVREgtriWyLAAc6KI3XQ_JsPTOZQ/exec"; 
 const baseSheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQd7MAwHPNY8jyOF2Fi5qFgtwnDHjjA1IzkEbN91axz8qNHIDum5T2X-zH8yZ2kqdZQC4Lj1jMYD00R/pub?output=csv&gid=";
 
 let storyData = {};
@@ -189,5 +189,6 @@ document.getElementById('back-btn').onclick = () => {
 
 // 시작 시 목록 로드
 window.onload = loadCharacterList;
+
 
 
