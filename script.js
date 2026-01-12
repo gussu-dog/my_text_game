@@ -3,40 +3,19 @@ const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQd7MAwHPNY8jy
 let storyData = {};
 let historyData = [];
 
-// 확률 가챠를 계산하는 새로운 함수
-function getGachaResult(chanceString) {
-    // 예: "101:20, 102:30, 103:50" -> ["101:20", "102:30", "103:50"]
-    const pools = chanceString.split(',').map(p => p.trim());
-    const dice = Math.random() * 100;
-    let cumulativeProbability = 0;
-
-    for (let pool of pools) {
-        const [nextId, probability] = pool.split(':');
-        cumulativeProbability += parseFloat(probability);
-        
-        if (dice <= cumulativeProbability) {
-            return nextId; // 당첨된 ID 반환
-        }
-    }
-    return null; // 확률 합이 100이 아니거나 오류 시
-}
-
+// 1. 메시지 추가 함수
 function addMessage(text, sender) {
     const chatWindow = document.getElementById('chat-window');
     const msgDiv = document.createElement('div');
     msgDiv.className = sender === 'me' ? 'my-message' : 'message-bubble';
-    
     let cleanText = text.replace(/\\n/g, '<br>');
     msgDiv.innerHTML = cleanText;
-    
     chatWindow.appendChild(msgDiv);
     chatWindow.scrollTop = chatWindow.scrollHeight;
 }
 
+// 2. 타이핑 표시
 function showTyping() {
-    const chatWindow = document.getElementById('typing-indicator') ? document.getElementById('typing-indicator') : null;
-    if (chatWindow) return chatWindow;
-
     const chatWin = document.getElementById('chat-window');
     const typingDiv = document.createElement('div');
     typingDiv.id = 'typing-indicator';
@@ -47,6 +26,25 @@ function showTyping() {
     return typingDiv;
 }
 
+// 3. 가챠 로직 (ID:확률, ID:확률 파싱)
+function getGachaResult(chanceString, defaultNext) {
+    if (!chanceString || !chanceString.includes(':')) return defaultNext;
+    
+    const pools = chanceString.split(',').map(p => p.trim());
+    const dice = Math.random() * 100;
+    let cumulativeProbability = 0;
+
+    for (let pool of pools) {
+        const [nextId, probability] = pool.split(':');
+        cumulativeProbability += parseFloat(probability);
+        if (dice <= cumulativeProbability) {
+            return nextId.trim();
+        }
+    }
+    return defaultNext; // 당첨 안 되면 기본 다음 ID로
+}
+
+// 4. 장면 실행
 async function playScene(sceneId) {
     const scene = storyData[sceneId];
     if (!scene) return;
@@ -59,16 +57,14 @@ async function playScene(sceneId) {
     }, 1000);
 }
 
+// 5. 선택지 표시 및 가챠 트리거
 function showOptions(sceneId) {
     const scene = storyData[sceneId];
     const optionsElement = document.getElementById('options');
     optionsElement.innerHTML = '';
     
-    // 선택지가 하나도 없으면 자동 다음 단계로 (D열의 ID 사용)
     if (!scene || !scene.options || scene.options.length === 0) {
-        if (scene.autoNext) {
-            setTimeout(() => playScene(scene.autoNext), 800);
-        }
+        if (scene.autoNext) setTimeout(() => playScene(scene.autoNext), 800);
         return;
     }
 
@@ -77,33 +73,29 @@ function showOptions(sceneId) {
         button.innerText = opt.label;
         button.className = 'option-btn';
         button.onclick = () => {
-    addMessage(opt.label, 'me');
-    optionsElement.innerHTML = '';
+            addMessage(opt.label, 'me');
+            optionsElement.innerHTML = '';
             
             setTimeout(() => {
-        const typing = showTyping();
-        setTimeout(() => {
-            if(typing.parentNode) typing.parentNode.removeChild(typing);
-            
-            let nextId;
-            // 만약 현재 선택지가 확률 이벤트를 트리거한다면 (triggerOpt와 일치)
-            if (scene.triggerOpt === opt.index && scene.chanceNext) {
-                // 가챠 로직 실행
-                const gachaId = getGachaResult(scene.chanceNext);
-                nextId = gachaId ? gachaId : opt.next;
-            } else {
-                nextId = opt.next;
-            }
-
-            if (storyData[nextId]) playScene(nextId);
-        }, 1000);
-    }, 500);
-};
+                const typing = showTyping();
+                setTimeout(() => {
+                    if(typing.parentNode) typing.parentNode.removeChild(typing);
+                    
+                    let nextId = opt.next;
+                    // M열(chanceNext)에 가챠 설정이 있고, 트리거 번호가 맞을 때
+                    if (scene.triggerOpt === opt.index && scene.chanceNext) {
+                        nextId = getGachaResult(scene.chanceNext, opt.next);
+                    }
+                    
+                    if (storyData[nextId]) playScene(nextId);
+                }, 1000);
+            }, 500);
         };
         optionsElement.appendChild(button);
     });
 }
 
+// 6. 데이터 로드
 async function loadStory() {
     try {
         const response = await fetch(sheetUrl);
@@ -118,18 +110,15 @@ async function loadStory() {
                 const scene = { 
                     text: cols[1], 
                     options: [], 
-                    autoNext: cols[3],    // D열: 자동 이동할 ID
-                    triggerOpt: cols[12], 
-                    chanceNext: cols[13], 
-                    chanceRate: parseFloat(cols[14]) || 0
+                    autoNext: cols[3],
+                    triggerOpt: cols[12], // M열: 트리거할 선택지 번호 (1, 2...)
+                    chanceNext: cols[13]  // N열: 가챠 데이터 (101:20, 102:80)
                 };
                 
-                // ★ 수정된 부분: 선택지는 E열(인덱스 4)부터 가져옵니다 ★
-                // E(4)-F(5), G(6)-H(7), I(8)-J(9) 순서
                 for (let i = 4; i <= 9; i += 2) { 
                     if (cols[i]) {
                         scene.options.push({ 
-                            index: ((i-2) / 2).toString(), 
+                            index: ((i-2) / 2).toString(), // 1, 2, 3...
                             label: cols[i], 
                             next: cols[i+1] 
                         }); 
@@ -137,7 +126,6 @@ async function loadStory() {
                 }
 
                 if (id < 0) {
-                    // C열(인덱스 2)이 me면 내가 보낸 것
                     historyData.push({ id, text: cols[1], sender: cols[2] === 'me' ? 'me' : 'bot' });
                 } else {
                     storyData[id.toString()] = scene;
@@ -147,11 +135,8 @@ async function loadStory() {
 
         historyData.sort((a, b) => a.id - b.id);
         historyData.forEach(h => addMessage(h.text, h.sender));
-
-        if (storyData["1"]) { playScene("1"); }
+        if (storyData["1"]) playScene("1");
     } catch (e) { console.error("Error:", e); }
 }
 
-
 loadStory();
-
