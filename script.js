@@ -217,7 +217,11 @@ async function playScene(sceneId) {
     const randomDelay = Math.floor(Math.random() * 1000) + 800;
     setTimeout(() => {
         if(typing && typing.parentNode) typing.parentNode.removeChild(typing);
-        addMessage(scene.text, 'bot', false, scene.time, scene.imageUrl);
+        let displayImg = scene.imageUrl;
+        if (sceneId === "1") {
+            displayImg = ""; // 1번 행의 이미지는 무시
+        }
+        addMessage(scene.text, 'bot', false, scene.time, displayImg);
         showOptions(sceneId);
     }, randomDelay);
 }
@@ -307,6 +311,7 @@ function clearAllSaves() {
 document.addEventListener('DOMContentLoaded', () => {
     loadCharacterList();
 });
+
 
 
 
