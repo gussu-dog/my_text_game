@@ -13,25 +13,43 @@ function getSaveKey(charName) {
 }
 
 // 3. 메시지 추가 및 저장
-function addMessage(text, sender, isLoadingSave = false) {
+function addMessage(text, sender, isLoadingSave = false, time = "") {
     const chatWindow = document.getElementById('chat-window');
     if (!chatWindow) return;
 
+    // 1. 구분선 처리 (text가 --- 로 시작하는 경우)
+    if (text.trim() === "---") {
+        const divider = document.createElement('div');
+        divider.className = 'date-divider';
+        divider.innerHTML = `<span>구분선/날짜</span>`; // 필요시 시트의 다음 컬럼 값을 넣어도 좋습니다.
+        chatWindow.appendChild(divider);
+    } else {
+
+    const wrapper = document.createElement('div');
+        wrapper.className = sender === 'me' ? 'message-wrapper me' : 'message-wrapper';
+        
     const msgDiv = document.createElement('div');
     msgDiv.className = sender === 'me' ? 'my-message' : 'message-bubble';
     msgDiv.innerHTML = text.replace(/\\n/g, '<br>');
-    chatWindow.appendChild(msgDiv);
 
-    // --- 여기를 수정합니다 ---
+        const timeSpan = document.createElement('span');
+        timeSpan.className = 'message-time';
+        timeSpan.innerText = time; // 시트에서 가져온 시간 표시
+
+        wrapper.appendChild(msgDiv);
+        wrapper.appendChild(timeSpan);
+        chatWindow.appendChild(wrapper);
+    
     // 브라우저가 화면을 갱신할 시간을 아주 잠깐(10ms) 준 뒤 스크롤
     setTimeout(() => {
         chatWindow.scrollTop = chatWindow.scrollHeight;
     }, 10);
     // -----------------------
 
+// 세이브 데이터 저장 (시간 정보도 함께 저장하도록 수정)
     if (!isLoadingSave && currentCharName) {
         let saveData = JSON.parse(localStorage.getItem(getSaveKey(currentCharName))) || { messages: [], lastSceneId: "1" };
-        saveData.messages.push({ text, sender });
+        saveData.messages.push({ text, sender, time }); 
         localStorage.setItem(getSaveKey(currentCharName), JSON.stringify(saveData));
     }
 }
@@ -47,8 +65,6 @@ function startChat(name, gid) {
     
     if(headerName) headerName.innerText = name;
     if(listPage) listPage.style.display = 'none';
-    
-    // 핵심 수정: 'block' 대신 'flex'를 사용해야 CSS 스크롤이 작동합니다!
     if(gamePage) gamePage.style.display = 'flex'; 
     
     document.getElementById('chat-window').innerHTML = '';
@@ -56,12 +72,12 @@ function startChat(name, gid) {
     
     loadStory(`${baseSheetUrl}${gid}`).then(() => {
         // 기존 저장된 메시지 불러오기 (historyData 포함)
-        historyData.forEach(h => addMessage(h.text, h.sender, true));
+        historyData.forEach(h => addMessage(h.text, h.sender, true, h.time));
 
         const saved = localStorage.getItem(getSaveKey(name));
         if (saved) {
             const parsed = JSON.parse(saved);
-            parsed.messages.forEach(m => addMessage(m.text, m.sender, true));
+            parsed.messages.forEach(m => addMessage(m.text, m.sender, true, m.time));
             showOptions(parsed.lastSceneId);
         } else {
             if (storyData["1"]) playScene("1");
@@ -85,9 +101,9 @@ async function loadStory(fullUrl) {
             const id = parseInt(cols[0]);
             if (!isNaN(id)) {
                 if (id < 0) {
-                    historyData.push({ id: id, text: cols[1], sender: cols[2] === 'me' ? 'me' : 'bot' });
+                    historyData.push({ id: id, text: cols[1], sender: cols[2] === 'me' ? 'me' : 'bot', time: timeValue });
                 } else {
-                    const scene = { text: cols[1], options: [], autoNext: cols[3], triggerOpt: cols[12], chanceNext: cols[13] };
+                    const scene = { text: cols[1], options: [], autoNext: cols[3], time: timeValue, triggerOpt: cols[12], chanceNext: cols[13] };
                     for (let i = 4; i <= 9; i += 2) { 
                         if (cols[i]) {
                             scene.options.push({ index: ((i-4) / 2 + 1).toString(), label: cols[i], next: cols[i+1] }); 
@@ -151,7 +167,7 @@ async function playScene(sceneId) {
     const randomDelay = Math.floor(Math.random() * 1000) + 800;
     setTimeout(() => {
         if(typing && typing.parentNode) typing.parentNode.removeChild(typing);
-        addMessage(scene.text, 'bot');
+        addMessage(scene.text, 'bot', false, scene.time);
         showOptions(sceneId);
     }, randomDelay);
 }
@@ -241,6 +257,7 @@ function clearAllSaves() {
 document.addEventListener('DOMContentLoaded', () => {
     loadCharacterList();
 });
+
 
 
 
