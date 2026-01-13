@@ -28,26 +28,38 @@ body {
     z-index: 1;
 }
 
-/* 4. 헤더 스타일 */
+/* 4. 헤더 공통 및 상세 설정 */
 .chat-header {
-    height: 60px; flex-shrink: 0;
+    height: 60px; 
+    flex-shrink: 0;
     background: rgba(255, 255, 255, 0.9);
     backdrop-filter: blur(10px);
     border-bottom: 1px solid #d1d1d6;
-    display: flex; align-items: center; padding: 0 15px;
+    display: flex; 
+    align-items: center; 
+    padding: 0 20px; /* 헤더 전체 좌우 여백을 늘림 */
     z-index: 10;
 }
+
+/* 목록 페이지는 중앙 정렬 유지 (원하신다면) */
 #list-page .chat-header { justify-content: center; }
 
-/* 뒤로가기 버튼 여백 */
+/* 게임 페이지(채팅창) 헤더 - 화살표와 이름 사이 간격 부여 */
+#game-page .chat-header {
+    justify-content: flex-start;
+    gap: 15px; /* 화살표와 이름 사이의 거리를 15px 띄움 */
+}
+
+/* 뒤로가기 버튼(화살표) 세부 조정 */
 .back-btn {
     cursor: pointer;
-    font-size: 20px;
-    color: #007AFF;
-    margin-right: 12px;  /* 화살표와 이름 사이를 조금 더 띄움 */
+    font-size: 22px;
+    color: #4da2ff;
     display: flex;
     align-items: center;
-    padding: 5px 0;      /* 터치 영역 확보 */
+    padding: 5px;
+    margin-left: -5px; /* 왼쪽 끝에 너무 붙지 않게 조절 */
+    text-decoration: none;
 }
 
 /* 이름 텍스트 */
@@ -93,15 +105,6 @@ body {
     overflow-y: auto !important; 
     height: 0; /* flex-grow와 결합하여 부모 안으로 가둠 */
     min-height: 0;
-}
-
-/* 대화 페이지 헤더 수정 */
-#game-page .chat-header {
-    display: flex;
-    align-items: center;
-    padding: 15px 16px;  /* 헤더 전체에 좌우 여백 16px 부여 */
-    background-color: #fff;
-    border-bottom: 1px solid #eee;
 }
 
 /* 메시지 나타나기 애니메이션 */
@@ -265,7 +268,7 @@ body {
     display: block;      /* 시간을 한 줄 차지하게 설정 */
     font-size: 11px;
     color: #8e8e93;
-    margin-top: 5px;    /* 말풍선/이미지와의 간격을 5px 추가 */
+    margin-top: 8px;    /* 말풍선/이미지와의 간격을 5px 추가 */
     margin-bottom: 2px;
 }
 
@@ -329,24 +332,6 @@ body {
 
 .image-message-wrapper.me {
     align-items: flex-end; /* 내 이미지는 오른쪽에 */
-}
-
-/* 메인 화면(목록) 헤더의 Contact 글자 */
-.chat-header .contact-name {
-    color: #8E8E93;          /* 아이폰 시스템 그레이 색상 */
-    font-weight: 700;        /* 볼드체 적용 */
-    font-size: 18px;         /* 적당한 크기 */
-    letter-spacing: -0.3px;  /* 자간을 줄여서 더 세련되게 */
-    padding-left: 5px;       /* 왼쪽 여백 살짝 추가 */
-}
-
-/* 메인 화면 헤더 자체의 여백도 조정하면 더 예쁩니다 */
-#list-page .chat-header {
-    padding: 15px 20px;      /* 위아래, 좌우 여백 */
-    display: flex;
-    align-items: center;
-    background-color: #f2f2f7; /* 배경색 통일 */
-    border-bottom: 1px solid #d1d1d6;
 }
 
 /* 말풍선과 시간을 묶는 컨테이너 */
