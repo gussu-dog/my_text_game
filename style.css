@@ -233,13 +233,19 @@ body {
 /* 시간 표시 스타일 */
 .message-wrapper {
     display: flex;
-    align-items: flex-end;
-    gap: 5px;
-    margin-bottom: 10px;
+    align-items: flex-start; /* 상단 정렬 */
+    margin-bottom: 12px;
+    gap: 8px; /* 프로필과 말풍선 사이 간격 */
 }
 
+/* 내 메시지일 때는 프로필을 숨기거나 구조를 반대로 */
 .message-wrapper.me {
-    flex-direction: row-reverse; /* 내 메시지는 시간이 왼쪽에 */
+    justify-content: flex-end;
+}
+
+/* 내 메시지에는 프로필 사진이 안 보이도록 설정 */
+.message-wrapper.me .chat-profile-img {
+    display: none;
 }
 
 .message-time {
@@ -277,6 +283,16 @@ body {
     object-fit: cover;
     display: block; /* 가끔 인라인 요소가 되면서 생기는 문제 방지 */
     cursor: pointer; /* 이미지 클릭 시 확대 기능 등을 위해 미리 설정 */
+}
+
+/* 프로필 이미지 스타일 */
+.chat-profile-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0; /* 이미지 크기 고정 */
+    background-color: #eee;
 }
 
 /* 내 이미지, 상대 이미지 위치 조절 */
@@ -317,4 +333,15 @@ body {
     align-items: center;
     background-color: #f2f2f7; /* 배경색 통일 */
     border-bottom: 1px solid #d1d1d6;
+}
+
+/* 말풍선과 시간을 묶는 컨테이너 */
+.bubble-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.message-wrapper.me .bubble-container {
+    align-items: flex-end;
 }
