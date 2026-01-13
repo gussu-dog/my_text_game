@@ -28,11 +28,6 @@ function addMessage(text, sender, isLoadingSave = false) {
         saveData.messages.push({ text, sender });
         localStorage.setItem(getSaveKey(currentCharName), JSON.stringify(saveData));
     }
-    // addMessage 함수 맨 마지막 줄에 추가
-setTimeout(() => {
-    const chatWindow = document.getElementById('chat-window');
-    chatWindow.scrollTop = chatWindow.scrollHeight;
-}, 50);
 }
 
 // 5. 대화 시작
@@ -233,4 +228,5 @@ function clearAllSaves() {
 document.addEventListener('DOMContentLoaded', () => {
     loadCharacterList();
 });
+
 
