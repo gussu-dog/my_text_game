@@ -48,16 +48,19 @@ function addMessage(text, sender, isLoadingSave = false, time = "", imageUrl = "
 
     // 3. 상대방일 때만 프로필 이미지 추가
     if (sender !== 'me') {
-        const profileImg = document.createElement('img');
-        profileImg.className = 'chat-profile-img';
-        // 별표 처리가 된 프사일 수 있으므로 replace 적용
-        profileImg.src = currentProfileImg ? currentProfileImg.replace(/^\*/, "") : "기본프사주소"; 
-        wrapper.appendChild(profileImg);
-    }
+    const profileImg = document.createElement('img');
+    profileImg.className = 'chat-profile-img';
+    // currentProfileImg가 없을 때를 대비해 기본 이미지나 투명 이미지를 넣는 것이 안전합니다.
+    profileImg.src = currentProfileImg ? currentProfileImg.replace(/^\*/, "") : "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"; 
+    wrapper.appendChild(profileImg);
+} else {
+    // 내 메시지일 때는 프로필 자리를 비워두거나 래퍼에 클래스를 추가해서 정렬을 돕습니다.
+    wrapper.classList.add('me'); 
+}
 
     // 4. 말풍선 컨테이너 생성
     const bubbleContainer = document.createElement('div');
-    bubbleContainer.className = 'bubble-container';
+bubbleContainer.className = 'bubble-container';
 
     // 이미지 메시지 처리 (O열 데이터)
     if (imageUrl) {
@@ -333,6 +336,7 @@ function clearAllSaves() {
 document.addEventListener('DOMContentLoaded', () => {
     loadCharacterList();
 });
+
 
 
 
