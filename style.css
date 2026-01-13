@@ -38,8 +38,25 @@ body {
     z-index: 10;
 }
 #list-page .chat-header { justify-content: center; }
-.back-btn { cursor: pointer; font-size: 22px; color: #4da2ff; margin-right: 15px; }
-#header-name { color: #000; font-weight: 600; font-size: 17px; }
+
+/* 뒤로가기 버튼 여백 */
+.back-btn {
+    cursor: pointer;
+    font-size: 22px;
+    color: #007AFF;
+    margin-right: 12px;  /* 화살표와 이름 사이를 조금 더 띄움 */
+    display: flex;
+    align-items: center;
+    padding: 5px 0;      /* 터치 영역 확보 */
+}
+
+/* 이름 텍스트 */
+#header-name {
+    color: #000;
+    font-weight: 600;
+    font-size: 18px;     /* 살짝 키워도 가독성이 좋아집니다 */
+    letter-spacing: -0.5px; /* 자간을 줄여 더 깔끔하게 */
+}
 
 /* 5. 캐릭터 목록 (메인화면 복구) */
 .list-container {
@@ -77,6 +94,12 @@ body {
     overflow-y: auto !important; 
     height: 0; /* flex-grow와 결합하여 부모 안으로 가둠 */
     min-height: 0;
+}
+
+/* 대화 페이지 헤더 수정 */
+#game-page .chat-header {
+    padding-left: 20px; /* 전체적인 왼쪽 시작 여백을 조금 더 줌 */
+    gap: 5px;           /* 버튼과 이름 사이의 기본 간격 설정 */
 }
 
 /* 메시지 나타나기 애니메이션 */
