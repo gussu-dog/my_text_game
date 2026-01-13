@@ -101,7 +101,7 @@ function addMessage(text, sender, isLoadingSave = false, time = "", imageUrl = "
     }
 }
 
-// 5. 대화 시작 (수정 버전)
+// 5. 대화 시작
 function startChat(name, gid) {
     currentCharName = name;
     currentGid = gid; 
@@ -119,12 +119,20 @@ function startChat(name, gid) {
     
     loadStory(`${baseSheetUrl}${gid}`).then(() => {
         // 기존 저장된 메시지 불러오기 (historyData 포함)
-        historyData.forEach(h => addMessage(h.text, h.sender, true, h.time, h.imageUrl)); 
+        historyData.forEach(h => {
+            let hImg = h.imageUrl || "";
+            if (hImg.startsWith('*')) hImg = ""; // 별표 예외 처리
+            addMessage(h.text, h.sender, true, h.time, hImg);
+        }); 
 
         const saved = localStorage.getItem(getSaveKey(name));
         if (saved) {
             const parsed = JSON.parse(saved);
-            parsed.messages.forEach(m => addMessage(m.text, m.sender, true, m.time, m.imageUrl));
+            parsed.messages.forEach(m => {
+                let mImg = m.imageUrl || "";
+                if (mImg.startsWith('*')) mImg = ""; // 별표 예외 처리
+                addMessage(m.text, m.sender, true, m.time, mImg);
+            });
             showOptions(parsed.lastSceneId);
         } else {
             if (storyData["1"]) playScene("1");
@@ -217,9 +225,9 @@ async function playScene(sceneId) {
     const randomDelay = Math.floor(Math.random() * 1000) + 800;
     setTimeout(() => {
         if(typing && typing.parentNode) typing.parentNode.removeChild(typing);
-        let displayImg = scene.imageUrl;
-        if (sceneId === "1") {
-            displayImg = ""; // 1번 행의 이미지는 무시
+        let displayImg = scene.imageUrl || "";
+        if (displayImg.startsWith('*') || sceneId === "1") {
+            displayImg = ""; 
         }
         addMessage(scene.text, 'bot', false, scene.time, displayImg);
         showOptions(sceneId);
@@ -253,7 +261,7 @@ function showOptions(sceneId) {
         button.innerText = opt.label;
         button.className = 'option-btn';
         button.onclick = () => {
-            addMessage(opt.label, 'me');
+            addMessage(opt.label, 'me', false, "", "");
             optionsElement.innerHTML = '';
             setTimeout(() => {
                 const typing = showTyping();
@@ -311,6 +319,7 @@ function clearAllSaves() {
 document.addEventListener('DOMContentLoaded', () => {
     loadCharacterList();
 });
+
 
 
 
