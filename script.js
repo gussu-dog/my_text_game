@@ -67,7 +67,7 @@ function addMessage(text, sender, isLoadingSave = false, time = "") {
 // 세이브 데이터 저장 (시간 정보도 함께 저장하도록 수정)
     if (!isLoadingSave && currentCharName) {
         let saveData = JSON.parse(localStorage.getItem(getSaveKey(currentCharName))) || { messages: [], lastSceneId: "1" };
-        saveData.messages.push({ text, sender, time }); 
+        saveData.messages.push({ text, sender, time: displayTime }); 
         localStorage.setItem(getSaveKey(currentCharName), JSON.stringify(saveData));
     }
 }
@@ -275,6 +275,7 @@ function clearAllSaves() {
 document.addEventListener('DOMContentLoaded', () => {
     loadCharacterList();
 });
+
 
 
 
