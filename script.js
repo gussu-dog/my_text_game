@@ -26,7 +26,7 @@ function getSaveKey(charName) {
 }
 
 // 3. 메시지 추가 및 저장
-function addMessage(text, sender, isLoadingSave = false, time = "") {
+function addMessage(text, sender, isLoadingSave = false, time = "", imageUrl = "") {
     const chatWindow = document.getElementById('chat-window');
     if (!chatWindow) return;
 
@@ -36,45 +36,69 @@ function addMessage(text, sender, isLoadingSave = false, time = "") {
         displayTime = getCurrentTime();
     }
 
-    // 1. 구분선 처리 (text가 --- 로 시작하는 경우)
     if (text.trim().startsWith("---")) {
+        // ... (기존 구분선 처리 로직 유지) ...
         const divider = document.createElement('div');
         divider.className = 'date-divider';
-
-        // "---" 뒤에 글자가 있다면 그 글자를 보여주고, 없으면 "구분선"이라고 표시
-    const dividerText = text.replace("---", "").trim() || "구분선";
-    divider.innerHTML = `<span>${dividerText}</span>`;
+        const dividerText = text.replace("---", "").trim() || "구분선";
+        divider.innerHTML = `<span>${dividerText}</span>`; 
         chatWindow.appendChild(divider);
-        return;
-    } else {
-    const wrapper = document.createElement('div');
-        wrapper.className = sender === 'me' ? 'message-wrapper me' : 'message-wrapper';
-        
-    const msgDiv = document.createElement('div');
-    msgDiv.className = sender === 'me' ? 'my-message' : 'message-bubble';
-    msgDiv.innerHTML = text.replace(/\\n/g, '<br>');
+        setTimeout(() => { chatWindow.scrollTop = chatWindow.scrollHeight; }, 10);
+        return; // 구분선은 이미지/텍스트 메시지와 분리
+    } 
+    
+    // 이미지와 텍스트를 함께, 또는 이미지/텍스트 단독으로 보내는 로직
+    const isImageOnly = imageUrl && !text; // 이미지 링크만 있는 경우
+    const isTextOnly = text && !imageUrl; // 텍스트 링크만 있는 경우
+    const isCombined = text && imageUrl; // 둘 다 있는 경우
 
+    if (isImageOnly || isCombined || isTextOnly) { // 어떤 메시지든 이 블록에서 처리
+        const wrapper = document.createElement('div');
+        wrapper.className = sender === 'me' ? 'message-wrapper me' : 'message-wrapper';
+
+        // 이미지 전용 메시지의 경우 align-items를 조절하기 위한 wrapper 클래스 추가
+        if (imageUrl) {
+            wrapper.classList.add('image-message-wrapper'); 
+            if (sender === 'me') {
+                wrapper.classList.add('me');
+            }
+        }
+
+        // 이미지 엘리먼트 생성 및 추가
+        if (imageUrl) {
+            const imgElement = document.createElement('img');
+            imgElement.src = imageUrl;
+            imgElement.className = 'chat-image';
+            wrapper.appendChild(imgElement);
+        }
+
+        // 텍스트 엘리먼트 생성 및 추가
+        if (text) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = sender === 'me' ? 'my-message' : 'message-bubble';
+            msgDiv.innerHTML = text.replace(/\\n/g, '<br>');
+            wrapper.appendChild(msgDiv);
+        }
+
+        // 시간 엘리먼트 생성 및 추가
         const timeSpan = document.createElement('span');
         timeSpan.className = 'message-time';
-        timeSpan.innerText = displayTime; // 시트에서 가져온 시간 표시
-
-        wrapper.appendChild(msgDiv);
+        timeSpan.innerText = displayTime;
         wrapper.appendChild(timeSpan);
+        
         chatWindow.appendChild(wrapper);
-    
-    // 브라우저가 화면을 갱신할 시간을 아주 잠깐(10ms) 준 뒤 스크롤
+    }
+
     setTimeout(() => {
         chatWindow.scrollTop = chatWindow.scrollHeight;
     }, 10);
-    // -----------------------
 
-// 세이브 데이터 저장 (시간 정보도 함께 저장하도록 수정)
+    // 세이브 데이터 저장 (imageUrl도 함께 저장)
     if (!isLoadingSave && currentCharName) {
         let saveData = JSON.parse(localStorage.getItem(getSaveKey(currentCharName))) || { messages: [], lastSceneId: "1" };
-        saveData.messages.push({ text, sender, time: displayTime }); 
+        saveData.messages.push({ text, sender, time: displayTime, imageUrl: imageUrl }); 
         localStorage.setItem(getSaveKey(currentCharName), JSON.stringify(saveData));
     }
-}
 }
 
 // 5. 대화 시작 (수정 버전)
@@ -95,12 +119,12 @@ function startChat(name, gid) {
     
     loadStory(`${baseSheetUrl}${gid}`).then(() => {
         // 기존 저장된 메시지 불러오기 (historyData 포함)
-        historyData.forEach(h => addMessage(h.text, h.sender, true, h.time));
+        historyData.forEach(h => addMessage(h.text, h.sender, true, h.time, h.imageUrl)); 
 
         const saved = localStorage.getItem(getSaveKey(name));
         if (saved) {
             const parsed = JSON.parse(saved);
-            parsed.messages.forEach(m => addMessage(m.text, m.sender, true, m.time));
+            parsed.messages.forEach(m => addMessage(m.text, m.sender, true, m.time, m.imageUrl));
             showOptions(parsed.lastSceneId);
         } else {
             if (storyData["1"]) playScene("1");
@@ -124,10 +148,12 @@ async function loadStory(fullUrl) {
             const id = parseInt(cols[0]);
             if (!isNaN(id)) {
                 const timeValue = cols[10] || "";
+                // [추가] O열(15번째, 인덱스 14)에서 이미지 URL을 가져옵니다.
+            const imageUrl = cols[14] || "";
                 if (id < 0) {
-                    historyData.push({ id: id, text: cols[1], sender: cols[2] === 'me' ? 'me' : 'bot', time: timeValue });
+                    historyData.push({ id: id, text: cols[1], sender: cols[2] === 'me' ? 'me' : 'bot', time: timeValue, imageUrl: imageUrl });
                 } else {
-                    const scene = { text: cols[1], options: [], autoNext: cols[3], time: timeValue, triggerOpt: cols[12], chanceNext: cols[13] };
+                    const scene = { text: cols[1], options: [], autoNext: cols[3], time: timeValue, imageUrl: imageUrl, triggerOpt: cols[12], chanceNext: cols[13] };
                     for (let i = 4; i <= 9; i += 2) { 
                         if (cols[i]) {
                             scene.options.push({ index: ((i-4) / 2 + 1).toString(), label: cols[i], next: cols[i+1] }); 
@@ -191,7 +217,7 @@ async function playScene(sceneId) {
     const randomDelay = Math.floor(Math.random() * 1000) + 800;
     setTimeout(() => {
         if(typing && typing.parentNode) typing.parentNode.removeChild(typing);
-        addMessage(scene.text, 'bot', false, scene.time);
+        addMessage(scene.text, 'bot', false, scene.time, scene.imageUrl);
         showOptions(sceneId);
     }, randomDelay);
 }
@@ -281,6 +307,7 @@ function clearAllSaves() {
 document.addEventListener('DOMContentLoaded', () => {
     loadCharacterList();
 });
+
 
 
 
