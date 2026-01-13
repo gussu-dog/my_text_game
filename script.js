@@ -121,7 +121,7 @@ function startChat(name, gid) {
         // 기존 저장된 메시지 불러오기 (historyData 포함)
         historyData.forEach(h => {
             let hImg = h.imageUrl || "";
-            if (hImg.startsWith('*')) hImg = ""; // 별표 예외 처리
+            if (hImg.startsWith('*') || h.id === 1) hImg = ""; // 별표 예외 처리
             addMessage(h.text, h.sender, true, h.time, hImg);
         }); 
 
@@ -130,7 +130,10 @@ function startChat(name, gid) {
             const parsed = JSON.parse(saved);
             parsed.messages.forEach(m => {
                 let mImg = m.imageUrl || "";
-                if (mImg.startsWith('*')) mImg = ""; // 별표 예외 처리
+                if (mImg.startsWith('*') || (index === 0 && parsed.messages.length > 0)) { // 별표 예외 처리
+                    if (mImg.startsWith('*')) mImg = "";
+                    if (index === 0) mImg = "";
+                }
                 addMessage(m.text, m.sender, true, m.time, mImg);
             });
             showOptions(parsed.lastSceneId);
@@ -319,6 +322,7 @@ function clearAllSaves() {
 document.addEventListener('DOMContentLoaded', () => {
     loadCharacterList();
 });
+
 
 
 
