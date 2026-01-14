@@ -184,6 +184,7 @@ async function loadStory(fullUrl) {
 async function loadCharacterList() {
     const spinner = document.getElementById('loading-spinner');
     const listDiv = document.getElementById('character-list');
+    const listPage = document.getElementById('list-page');
     try {
         const response = await fetch(appsScriptUrl);
         const characters = await response.json();
@@ -198,8 +199,12 @@ async function loadCharacterList() {
             listDiv.appendChild(item);
         });
         if(spinner) spinner.style.display = 'none';
+        if(listPage) {
+            listPage.style.setProperty('display', 'flex', 'important');
+        }
     } catch (e) {
         console.error("캐릭터 목록 오류:", e);
+        if(spinner) spinner.innerHTML = "<p style='color:white;'>목록 로드 실패.</p>";
     }
 }
 
@@ -320,3 +325,4 @@ function clearAllSaves() {
 document.addEventListener('DOMContentLoaded', () => {
     loadCharacterList();
 });
+
