@@ -82,11 +82,16 @@ bubbleContainer.className = 'bubble-container';
 
     // 이미지 메시지 처리 (O열 데이터)
     if (imageUrl) {
-        const imgElement = document.createElement('img');
-        imgElement.src = imageUrl;
-        imgElement.className = 'chat-image';
-        bubbleContainer.appendChild(imgElement);
-    }
+    console.log("🎨 현재 출력 시도하는 이미지 주소:", imageUrl); // 이 줄을 추가하세요!
+    const imgElement = document.createElement('img');
+    imgElement.src = imageUrl.trim(); // 양옆 공백 제거 추가
+    imgElement.className = 'chat-image';
+    
+    // 이미지가 로드 실패했을 때 로그 찍기
+    imgElement.onerror = () => console.error("❌ 이미지 로드 실패! 주소 확인:", imageUrl);
+    
+    bubbleContainer.appendChild(imgElement);
+}
 
     // 텍스트 메시지 처리
     if (text) {
@@ -191,7 +196,7 @@ async function loadStory(fullUrl) {
             if (!isNaN(id)) {
                 const timeValue = cols[10] || "";
                 // [추가] O열(15번째, 인덱스 14)에서 이미지 URL을 가져옵니다.
-            const imageUrl = cols[14] || "";
+            const imageUrl = (cols[14] || "").trim().replace(/^"|"$/g, ""); // 앞뒤 공백과 큰따옴표 제거
                 if (id < 0) {
                     historyData.push({ id: id, text: cols[1], sender: cols[2] === 'me' ? 'me' : 'bot', time: timeValue, imageUrl: imageUrl });
                 } else {
@@ -375,6 +380,7 @@ function clearAllSaves() {
 document.addEventListener('DOMContentLoaded', () => {
     loadCharacterList();
 });
+
 
 
 
