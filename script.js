@@ -245,7 +245,7 @@ async function playScene(sceneId) {
         saveData.lastSceneId = sceneId;
         localStorage.setItem(getSaveKey(currentCharName), JSON.stringify(saveData));
     }
-
+    if (scene.text || scene.imageUrl) {
     const typing = showTyping();
     // 0.8초 ~ 1.8초 사이의 랜덤한 대기 시간 설정 (입력 중... 표시 시간)
     const randomDelay = Math.floor(Math.random() * 1000) + 800;
@@ -258,6 +258,10 @@ async function playScene(sceneId) {
         addMessage(scene.text, 'bot', false, scene.time, displayImg);
         showOptions(sceneId);
     }, randomDelay);
+} else {
+        // 텍스트/이미지가 아예 없으면 딜레이 없이 바로 선택지 노출
+        showOptions(sceneId);
+    }
 }
 
 function showTyping() {
@@ -289,16 +293,26 @@ function showOptions(sceneId) {
         button.onclick = () => {
             addMessage(opt.label, 'me', false, "", "");
             optionsElement.innerHTML = '';
+            
             setTimeout(() => {
-                const typing = showTyping();
-                setTimeout(() => {
-                    if(typing && typing.parentNode) typing.parentNode.removeChild(typing);
-                    let nextId = opt.next;
-                    if (scene.triggerOpt === opt.index && scene.chanceNext) {
-                        nextId = getGachaResult(scene.chanceNext, opt.next);
-                    }
+                let nextId = opt.next;
+                const nextScene = storyData[nextId];
+
+                if (nextScene && (nextScene.text || nextScene.imageUrl)) {
+                    const typing = showTyping();
+                    setTimeout(() => {
+                        if(typing && typing.parentNode) typing.parentNode.removeChild(typing);
+                        
+                        // 확률 요소(가차) 체크
+                        if (scene.triggerOpt === opt.index && scene.chanceNext) {
+                            nextId = getGachaResult(scene.chanceNext, opt.next);
+                        }
+                        if (storyData[nextId]) playScene(nextId);
+                    }, 1000);
+                } else {
+                    // 다음 장면이 텍스트/이미지 없는 선택지라면 바로 실행
                     if (storyData[nextId]) playScene(nextId);
-                }, 1000);
+                }
             }, 500);
         };
         optionsElement.appendChild(button);
@@ -345,6 +359,7 @@ function clearAllSaves() {
 document.addEventListener('DOMContentLoaded', () => {
     loadCharacterList();
 });
+
 
 
 
