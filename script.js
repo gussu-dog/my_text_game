@@ -81,14 +81,17 @@ function addMessage(text, sender, isLoadingSave = false, time = "", imageUrl = "
 bubbleContainer.className = 'bubble-container';
 
     // 이미지 메시지 처리 (O열 데이터)
-    if (imageUrl) {
-    console.log("🎨 현재 출력 시도하는 이미지 주소:", imageUrl); // 이 줄을 추가하세요!
+    if (imageUrl && imageUrl.trim() !== "") {
     const imgElement = document.createElement('img');
-    imgElement.src = imageUrl.trim(); // 양옆 공백 제거 추가
+    // 주소를 한 번 더 다듬어서 대입
+    const cleanUrl = imageUrl.trim().replace(/^"|"$/g, "");
+    imgElement.src = cleanUrl;
     imgElement.className = 'chat-image';
     
-    // 이미지가 로드 실패했을 때 로그 찍기
-    imgElement.onerror = () => console.error("❌ 이미지 로드 실패! 주소 확인:", imageUrl);
+    // 에러 발생 시 로그에 어떤 주소가 잘못되었는지 정확히 찍기
+    imgElement.onerror = () => {
+        console.error("❌ 이미지 로드 실패 주소:", cleanUrl);
+    };
     
     bubbleContainer.appendChild(imgElement);
 }
@@ -196,7 +199,7 @@ async function loadStory(fullUrl) {
             if (!isNaN(id)) {
                 const timeValue = cols[10] || "";
                 // [추가] O열(15번째, 인덱스 14)에서 이미지 URL을 가져옵니다.
-            const imageUrl = (cols[14] || "").trim().replace(/^"|"$/g, ""); // 앞뒤 공백과 큰따옴표 제거
+            const imageUrl = (cols[14] || "").trim().replace(/^"|"$/g, "");
                 if (id < 0) {
                     historyData.push({ id: id, text: cols[1], sender: cols[2] === 'me' ? 'me' : 'bot', time: timeValue, imageUrl: imageUrl });
                 } else {
@@ -380,6 +383,7 @@ function clearAllSaves() {
 document.addEventListener('DOMContentLoaded', () => {
     loadCharacterList();
 });
+
 
 
 
