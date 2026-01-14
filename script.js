@@ -69,10 +69,14 @@ function addMessage(text, sender, isLoadingSave = false, time = "", imageUrl = "
 
     // 이미지 처리
     if (imageUrl) {
+        let cleanImgUrl = imageUrl.trim();
+        // 주소가 '*'로 시작하면 이미지를 아예 생성하지 않음 (깨짐 방지)
+        if (cleanImgUrl !== "" && !cleanImgUrl.startsWith('*')) {
         const imgElement = document.createElement('img');
         imgElement.src = imageUrl;
         imgElement.className = 'chat-image';
         bubbleContainer.appendChild(imgElement);
+    }
     }
 
     // 텍스트 처리
@@ -226,7 +230,10 @@ async function playScene(sceneId) {
         setTimeout(() => {
             if(typing && typing.parentNode) typing.parentNode.removeChild(typing);
             let displayImg = scene.imageUrl || "";
-            if (displayImg.startsWith('*') || sceneId === "1") displayImg = ""; 
+            displayImg = displayImg.trim();
+            if (displayImg.startsWith('*') || sceneId === "1") {
+        displayImg = ""; 
+    }
             addMessage(scene.text || "", 'bot', false, scene.time, displayImg);
             showOptions(sceneId);
         }, randomDelay);
@@ -325,4 +332,5 @@ function clearAllSaves() {
 document.addEventListener('DOMContentLoaded', () => {
     loadCharacterList();
 });
+
 
