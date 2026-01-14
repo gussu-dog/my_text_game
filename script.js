@@ -254,7 +254,11 @@ async function playScene(sceneId) {
         saveData.lastSceneId = sceneId;
         localStorage.setItem(getSaveKey(currentCharName), JSON.stringify(saveData));
     }
-    if (scene.text || scene.imageUrl) {
+
+    // --- [수정] 텍스트가 존재하고, 구분선(---)이 아닐 때만 '입력 중' 표시 ---
+    const isDivider = scene.text && scene.text.trim().startsWith("---");
+
+    if (scene.text || scene.imageUrl && !isDivider) {
     const typing = showTyping();
     // 0.8초 ~ 1.8초 사이의 랜덤한 대기 시간 설정 (입력 중... 표시 시간)
     const randomDelay = Math.floor(Math.random() * 1000) + 800;
@@ -268,6 +272,7 @@ async function playScene(sceneId) {
         showOptions(sceneId);
     }, randomDelay);
 } else {
+        addMessage(scene.text || "", 'bot', false, scene.time, scene.imageUrl || "");
         // 텍스트/이미지가 아예 없으면 딜레이 없이 바로 선택지 노출
         showOptions(sceneId);
     }
@@ -307,7 +312,9 @@ function showOptions(sceneId) {
                 let nextId = opt.next;
                 const nextScene = storyData[nextId];
 
-                if (nextScene && (nextScene.text || nextScene.imageUrl)) {
+                const isNextDivider = nextScene && nextScene.text && nextScene.text.trim().startsWith("---");
+
+                if (nextScene && (nextScene.text || nextScene.imageUrl) && !isNextDivider) {
                     const typing = showTyping();
                     setTimeout(() => {
                         if(typing && typing.parentNode) typing.parentNode.removeChild(typing);
@@ -368,6 +375,7 @@ function clearAllSaves() {
 document.addEventListener('DOMContentLoaded', () => {
     loadCharacterList();
 });
+
 
 
 
