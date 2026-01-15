@@ -264,6 +264,17 @@ body {
     display: none;
 }
 
+/* 같은 시간대 연속 메시지 간격 */
+.message-wrapper.continuation {
+    margin-top: -10px; /* 위 메시지와 밀착 */
+    margin-bottom: 5px;
+}
+
+/* 연속된 메시지일 때는 프로필 자리를 비워둠 (상대방 메시지 기준) */
+.message-wrapper.continuation:not(.me) .bubble-container {
+    margin-left: 45px; /* 프로필 이미지 크기만큼 여백 보정 */
+}
+
 .message-time {
     display: block;      /* 시간을 한 줄 차지하게 설정 */
     font-size: 11px;
