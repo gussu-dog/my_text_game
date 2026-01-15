@@ -115,13 +115,13 @@ async function addMessage(text, sender, isLoadingSave = false, time = "", imageU
         msgDiv.className = sender === 'me' ? 'my-message' : 'message-bubble';
         
         if (effect === 'horror') msgDiv.classList.add('horror-text');
-        if (effect === 'shake') msgDiv.classList.add('shake-fade-text');
+        if (effect === 'shake') msgDiv.classList.add('shake-text');
         
         bubbleContainer.appendChild(msgDiv);
         
         // ✨ 타자기 효과 적용 (L열에 'type'이라고 적거나 horror일 때 자동 적용)
         if (!isLoadingSave && (effect === 'type' || effect === 'horror')) {
-            await typeWriter(msgDiv, text, effect === 'horror' ? 120 : 40); // 공포는 더 천천히
+            typeWriter(msgDiv, text, effect === 'horror' ? 150 : 50);
         } else {
             msgDiv.innerHTML = text.replace(/\\n/g, '<br>');
         }
@@ -448,6 +448,7 @@ function clearAllSaves() {
 document.addEventListener('DOMContentLoaded', () => {
     loadCharacterList();
 });
+
 
 
 
