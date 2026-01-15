@@ -52,14 +52,23 @@ body {
 
 /* 뒤로가기 버튼(화살표) 세부 조정 */
 .back-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
     cursor: pointer;
-    font-size: 22px;
-    color: #4da2ff;
-    display: flex;
-    align-items: center;
-    padding: 5px;
-    margin-left: -5px; /* 왼쪽 끝에 너무 붙지 않게 조절 */
-    text-decoration: none;
+    
+    /* 여기서부터 수정/추가 */
+    padding: 10px 20px;     /* 상하 10px, 좌우 20px로 여백을 넉넉히 줌 */
+    display: flex;          /* 아이콘과 텍스트가 있다면 정렬 유지 */
+    align-items: center;    /* 중앙 정렬 */
+    justify-content: center;
+    min-width: 60px;        /* 최소 가로 길이를 보장 */
+    transition: opacity 0.2s; /* 누를 때 피드백 효과 */
+}
+
+#back-btn:active {
+    opacity: 0.5;           /* 버튼을 누르는 순간 살짝 투명하게 해서 눌렸음을 알림 */
 }
 
 /* 이름 텍스트 */
