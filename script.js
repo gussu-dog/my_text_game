@@ -33,10 +33,6 @@ function addMessage(text, sender, isLoadingSave = false, time = "", imageUrl = "
 
     const isContinuation = (lastSender === sender && lastTime === displayTime && !text.startsWith("---"));
 
-    // wrapper 생성 시 continuation 클래스 부여
-const wrapper = document.createElement('div');
-wrapper.className = `message-wrapper ${sender === 'me' ? 'me' : ''} ${isContinuation ? 'continuation' : ''}`;
-
     // 1. 구분선 처리
     if (text.trim().startsWith("---")) {
         lastSender = "";
@@ -64,7 +60,6 @@ wrapper.className = `message-wrapper ${sender === 'me' ? 'me' : ''} ${isContinua
     if (!text && !imageUrl) return;
 
     const wrapper = document.createElement('div');
-    // 연속된 메시지면 'continuation' 클래스 추가 (간격 조절용)
     wrapper.className = `message-wrapper ${sender === 'me' ? 'me' : ''} ${isContinuation ? 'continuation' : ''}`;
     
     if (sender !== 'me' && !isContinuation) {
@@ -372,6 +367,7 @@ function clearAllSaves() {
 document.addEventListener('DOMContentLoaded', () => {
     loadCharacterList();
 });
+
 
 
 
