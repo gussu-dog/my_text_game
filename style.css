@@ -398,8 +398,8 @@ body {
 
 /* 이어진 메시지 공통: 간격 좁히기 */
 .message-wrapper.continuation {
-    margin-top: -8px !important;
-    margin-bottom: 2px !important;
+    margin-top: -8px;
+    margin-bottom: 2px;
 }
 
 /* 1. 이어지는 상대방 메시지: 꼬리 제거 및 완전히 둥글게 */
