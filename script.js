@@ -163,7 +163,13 @@ wrapper.appendChild(bubbleContainer);
 
     if (!isLoadingSave && currentCharName) {
         let saveData = JSON.parse(localStorage.getItem(getSaveKey(currentCharName))) || { messages: [], lastSceneId: "1" };
-        saveData.messages.push({ text, sender, time: displayTime, imageUrl: imageUrl }); 
+        saveData.messages.push({ 
+        text, 
+        sender, 
+        time: displayTime, 
+        imageUrl: imageUrl,
+        effect: effect // 이 부분이 핵심!
+    });
         localStorage.setItem(getSaveKey(currentCharName), JSON.stringify(saveData));
     }
 }
@@ -451,6 +457,7 @@ function clearAllSaves() {
 document.addEventListener('DOMContentLoaded', () => {
     loadCharacterList();
 });
+
 
 
 
