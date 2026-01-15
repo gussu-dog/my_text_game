@@ -195,12 +195,12 @@ function startChat(name, gid, photo) {
     document.getElementById('options').innerHTML = '';
     
     loadStory(`${baseSheetUrl}${gid}`).then(async () => {
-        if (historyData.length > 0) {
+        if (historyData && historyData.length > 0) {
             for (const h of historyData) {
                 let hImg = h.imageUrl || "";
                 if (hImg.startsWith('*')) hImg = ""; 
                 await addMessage(h.text, h.sender, true, h.time, hImg, h.effect || "");
-            });
+            }
         }
 
         const saved = localStorage.getItem(getSaveKey(name));
@@ -211,7 +211,7 @@ function startChat(name, gid, photo) {
                     let mImg = m.imageUrl || "";
                     if (mImg.startsWith('*')) mImg = ""; 
                     await addMessage(m.text, m.sender, true, m.time, mImg, m.effect || "");
-                });
+                }
                 showOptions(parsed.lastSceneId);
             } else {
                 if (storyData["1"]) playScene("1");
@@ -251,15 +251,15 @@ async function loadStory(fullUrl) {
                     });
                 } else {
                     const scene = { 
-            text: cols[1], 
-            options: [], 
-            autoNext: cols[3], 
-            time: timeValue, 
-            effect: effectValue, // ✨ 이펙트 저장
-            imageUrl: imageUrl, 
-            triggerOpt: cols[12], 
-            chanceNext: cols[13] 
-        };
+                        text: cols[1], 
+                        options: [], 
+                        autoNext: cols[3], 
+                        time: timeValue, 
+                        effect: effectValue, 
+                        imageUrl: imageUrl, 
+                        triggerOpt: cols[12], 
+                        chanceNext: cols[13] 
+                    };
                     for (let i = 4; i <= 9; i += 2) { 
                         if (cols[i]) {
                             scene.options.push({ index: ((i-4) / 2 + 1).toString(), label: cols[i], next: cols[i+1] }); 
@@ -465,6 +465,7 @@ function clearAllSaves() {
 document.addEventListener('DOMContentLoaded', () => {
     loadCharacterList();
 });
+
 
 
 
