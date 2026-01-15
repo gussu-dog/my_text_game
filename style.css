@@ -133,8 +133,17 @@ body {
     white-space: pre-wrap;
     box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
-.message-bubble { background: #e9e9eb; align-self: flex-start; border-bottom-left-radius: 4px; }
-.my-message { background: #4da2ff; color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
+.message-bubble { 
+    background: #e9e9eb; 
+    align-self: flex-start; 
+    border-radius: 18px; /* !important나 하단 각지기 제거 */
+}
+.my-message { 
+    background: #4da2ff; 
+    color: #fff; 
+    align-self: flex-end; 
+    border-radius: 18px; /* !important나 하단 각지기 제거 */
+}
 
 /* 8. 하단 옵션창 */
 .options-container {
@@ -369,20 +378,22 @@ body {
 .message-bubble::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: -6px;
-    border-top: 10px solid #e9e9eb; 
-    border-left: 10px solid transparent;
+    top: 10px;    /* 위에서 약간 내려와야 자연스럽습니다 */
+    left: -7px;   /* 왼쪽으로 살짝 밀기 */
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+    border-right: 10px solid #e9e9eb; /* 말풍선 색상과 일치 */
 }
 
 /* 내 꼬리: 배경색 #4da2ff(하늘색)와 일치시킴 */
 .my-message::after {
     content: '';
     position: absolute;
-    top: 0;
-    right: -6px;
-    border-top: 10px solid #4da2ff; 
-    border-right: 10px solid transparent;
+    top: 10px;    /* 위에서 약간 내려와야 자연스럽습니다 */
+    right: -7px;  /* 오른쪽으로 살짝 밀기 */
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+    border-left: 10px solid #4da2ff; /* 하늘색과 일치 */
 }
 
 /* 이어진 메시지 공통: 간격 좁히기 */
