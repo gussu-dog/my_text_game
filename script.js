@@ -26,7 +26,7 @@ function getSaveKey(charName) {
 }
 
 // 3. 메시지 추가 및 저장 (중복 및 괄호 오류 수정됨)
-function addMessage(text, sender, isLoadingSave = false, time = "", imageUrl = "") {
+function addMessage(text, sender, isLoadingSave = false, time = "", imageUrl = "", effect = "") {
     const chatWindow = document.getElementById('chat-window');
     if (!chatWindow) return;
 
@@ -90,6 +90,12 @@ function addMessage(text, sender, isLoadingSave = false, time = "", imageUrl = "
     if (text) {
         const msgDiv = document.createElement('div');
         msgDiv.className = sender === 'me' ? 'my-message' : 'message-bubble';
+        if (effect === 'horror') msgDiv.classList.add('horror-text');
+        if (effect === 'shake') msgDiv.classList.add('shake-text');
+        if (effect === 'system') {
+             wrapper.className = 'system-wrapper'; // 시스템 메시지용 래퍼로 교체
+             msgDiv.className = 'system-msg';
+        }
         msgDiv.innerHTML = text.replace(/\\n/g, '<br>');
         bubbleContainer.appendChild(msgDiv);
     }
@@ -195,11 +201,21 @@ async function loadStory(fullUrl) {
             const id = parseInt(cols[0]);
             if (!isNaN(id)) {
                 const timeValue = cols[10] || "";
+                const effectValue = (cols[11] || "").trim().toLowerCase();
                 const imageUrl = (cols[14] || "").trim();
                 if (id < 0) {
                     historyData.push({ id: id, text: cols[1], sender: cols[2] === 'me' ? 'me' : 'bot', time: timeValue, imageUrl: imageUrl });
                 } else {
-                    const scene = { text: cols[1], options: [], autoNext: cols[3], time: timeValue, imageUrl: imageUrl, triggerOpt: cols[12], chanceNext: cols[13] };
+                    const scene = { 
+            text: cols[1], 
+            options: [], 
+            autoNext: cols[3], 
+            time: timeValue, 
+            effect: effectValue, // ✨ 이펙트 저장
+            imageUrl: imageUrl, 
+            triggerOpt: cols[12], 
+            chanceNext: cols[13] 
+        };
                     for (let i = 4; i <= 9; i += 2) { 
                         if (cols[i]) {
                             scene.options.push({ index: ((i-4) / 2 + 1).toString(), label: cols[i], next: cols[i+1] }); 
@@ -246,6 +262,12 @@ async function playScene(sceneId) {
     const scene = storyData[sceneId];
     if (!scene) return;
 
+    if (scene.effect === 'flash') {
+        const frame = document.querySelector('.phone-frame');
+        frame.classList.add('flash-effect');
+        setTimeout(() => frame.classList.remove('flash-effect'), 500);
+    }
+
     if (currentCharName) {
         let saveData = JSON.parse(localStorage.getItem(getSaveKey(currentCharName))) || { messages: [], lastSceneId: "1" };
         saveData.lastSceneId = sceneId;
@@ -275,13 +297,13 @@ async function playScene(sceneId) {
             if (displayImg.startsWith('*') || sceneId === "1") {
         displayImg = ""; 
     }
-            addMessage(scene.text || "", 'bot', false, scene.time, displayImg);
+            addMessage(scene.text || "", 'bot', false, scene.time, displayImg, scene.effect);
             showOptions(sceneId);
             typingTimeout = null;
         }, randomDelay);
     } else {
         let displayImg = getCleanImg(scene.imageUrl, sceneId);
-        addMessage(scene.text || "", 'bot', false, scene.time, displayImg);
+        addMessage(scene.text || "", 'bot', false, scene.time, displayImg, scene.effect);
         showOptions(sceneId);
     }
 }
@@ -399,6 +421,7 @@ function clearAllSaves() {
 document.addEventListener('DOMContentLoaded', () => {
     loadCharacterList();
 });
+
 
 
 
