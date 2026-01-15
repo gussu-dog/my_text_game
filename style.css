@@ -441,7 +441,7 @@ body {
 
 /* 1. Horror: 어두운 적색, 궁서체, 큰 글씨, 어두운 말풍선 */
 .horror-text {
-    background-color: #252222 !important; 
+    background-color: #333333 !important; 
     color: #CC0000 !important;           
     font-family: 'Gungsuh', '궁서', serif !important;
     font-size: 1.1em !important;
@@ -454,16 +454,21 @@ body {
 
 /* 진동 효과 (감쇄 버전) 클래스명 확인 */
 .shake-text {
-    animation: shakeFade 1.5s ease-out forwards;
+    display: inline-block; /* 애니메이션이 잘 먹도록 설정 */
+    animation: shivering 0.8s cubic-bezier(.36,.07,.19,.97) both;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    perspective: 1000px;
 }
 
-@keyframes shakeFade {
-    0% { transform: translate(2px, 2px); }
-    20% { transform: translate(-2px, -2px); }
-    40% { transform: translate(1px, -1px); }
-    60% { transform: translate(-1px, 1px); }
-    80% { transform: translate(0.5px, -0.5px); }
-    100% { transform: translate(0, 0); }
+@keyframes shivering {
+    10%, 90% { transform: translate3d(-2px, 0, 0); }
+    20%, 80% { transform: translate3d(4px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+    40%, 60% { transform: translate3d(6px, 0, 0); }
+    /* 후반부로 갈수록 수치가 줄어들며 잦아듭니다 */
+    85% { transform: translate3d(1px, 0, 0); }
+    100% { transform: translate3d(0, 0, 0); }
 }
 
 /* 3. Type: 타자기 효과 시 커서 깜빡임 (선택 사항) */
