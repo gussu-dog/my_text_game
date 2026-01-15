@@ -398,7 +398,7 @@ body {
 
 /* 이어진 메시지 공통: 간격 좁히기 */
 .message-wrapper.continuation {
-    margin-top: -20px !important;
+    margin-top: -8px !important;
     margin-bottom: 2px !important;
 }
 
