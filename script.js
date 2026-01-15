@@ -25,6 +25,30 @@ function getSaveKey(charName) {
     return `game_save_${charName}`;
 }
 
+// [1] 타자기 효과용 함수
+function typeWriter(element, text, speed = 50) {
+    let i = 0;
+    element.innerHTML = "";
+    return new Promise((resolve) => {
+        function type() {
+            if (i < text.length) {
+                // 한 글자씩 추가 (줄바꿈 처리 포함)
+                if (text.substr(i, 2) === "\\n") {
+                    element.innerHTML += "<br>";
+                    i += 2;
+                } else {
+                    element.innerHTML += text.charAt(i);
+                    i++;
+                }
+                setTimeout(type, speed);
+            } else {
+                resolve();
+            }
+        }
+        type();
+    });
+}
+
 // 3. 메시지 추가 및 저장 (중복 및 괄호 오류 수정됨)
 function addMessage(text, sender, isLoadingSave = false, time = "", imageUrl = "", effect = "") {
     const chatWindow = document.getElementById('chat-window');
@@ -90,14 +114,17 @@ function addMessage(text, sender, isLoadingSave = false, time = "", imageUrl = "
     if (text) {
         const msgDiv = document.createElement('div');
         msgDiv.className = sender === 'me' ? 'my-message' : 'message-bubble';
+        
         if (effect === 'horror') msgDiv.classList.add('horror-text');
         if (effect === 'shake') msgDiv.classList.add('shake-text');
-        if (effect === 'system') {
-             wrapper.className = 'system-wrapper'; // 시스템 메시지용 래퍼로 교체
-             msgDiv.className = 'system-msg';
-        }
         msgDiv.innerHTML = text.replace(/\\n/g, '<br>');
         bubbleContainer.appendChild(msgDiv);
+        // ✨ 타자기 효과 적용 (L열에 'type'이라고 적거나 horror일 때 자동 적용)
+        if (!isLoadingSave && (effect === 'type' || effect === 'horror')) {
+            await typeWriter(msgDiv, text, effect === 'horror' ? 150 : 50); // 공포는 더 천천히
+        } else {
+            msgDiv.innerHTML = text.replace(/\\n/g, '<br>');
+        }
     }
 
     const timeSpan = document.createElement('span');
@@ -421,6 +448,7 @@ function clearAllSaves() {
 document.addEventListener('DOMContentLoaded', () => {
     loadCharacterList();
 });
+
 
 
 
