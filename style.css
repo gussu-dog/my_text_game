@@ -439,47 +439,36 @@ body {
     margin-bottom: 2px; /* 말풍선 자체의 하단 여백을 살짝 줘서 가독성 확보 */
 }
 
-/* 1. 공포 효과: 붉은 글씨 + 흐려짐 */
+/* 1. Horror: 어두운 적색, 궁서체, 큰 글씨, 어두운 말풍선 */
 .horror-text {
-    color: #ff0000 !important;
-    text-shadow: 0 0 8px rgba(255, 0, 0, 0.6);
-    font-weight: 900;
+    background-color: #2c0000 !important; /* 매우 어두운 핏빛 배경 */
+    color: #8b0000 !important;           /* 어두운 적색 글씨 */
+    font-family: "Gungsuh", "궁서", serif !important;
+    font-size: 18px !important;
+    border: 1px solid #4a0000;
+    box-shadow: inset 0 0 10px #000;
+    line-height: 1.6;
 }
 
-/* 2. 진동 효과: 말풍선이 미친듯이 떨림 */
-.shake-text {
-    animation: shakeAnim 0.1s infinite;
+/* 2. Shake-Fade: 서서히 멈추는 진동 */
+.shake-fade-text {
+    animation: shakeFade 1.5s ease-out forwards; /* 1.5초 동안 서서히 멈춤 */
 }
 
-@keyframes shakeAnim {
-    0% { transform: translate(1px, 1px); }
-    50% { transform: translate(-1px, -1px); }
-    100% { transform: translate(1px, -1px); }
+@keyframes shakeFade {
+    0% { transform: translate(2px, 2px); }
+    10% { transform: translate(-2px, -2px); }
+    20% { transform: translate(2px, -2px); }
+    30% { transform: translate(-2px, 2px); }
+    40% { transform: translate(1px, 1px); }
+    60% { transform: translate(-1px, -1px); }
+    80% { transform: translate(0.5px, 0.5px); }
+    100% { transform: translate(0, 0); }
 }
 
-/* 3. 화면 번쩍임: 화이트 아웃 또는 레드 아웃 */
-.flash-effect {
-    animation: flashAnim 0.4s ease-out;
+/* 3. Type: 타자기 효과 시 커서 깜빡임 (선택 사항) */
+.message-bubble:empty::after {
+    content: '|';
+    animation: blink 0.5s infinite;
 }
-
-@keyframes flashAnim {
-    0% { filter: brightness(3) contrast(1.5); background: white; }
-    100% { filter: brightness(1) contrast(1); background: transparent; }
-}
-
-/* 4. 시스템 메시지: 말풍선 형태를 완전히 벗어남 */
-.system-wrapper {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    margin: 20px 0;
-}
-.system-msg {
-    background: rgba(0, 0, 0, 0.05) !important;
-    color: #666 !important;
-    border: none !important;
-    font-size: 12px;
-    padding: 5px 15px;
-    border-radius: 4px;
-    box-shadow: none !important;
-}
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
