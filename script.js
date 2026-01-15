@@ -260,11 +260,23 @@ function showOptions(sceneId) {
     if(!optionsElement) return;
     optionsElement.innerHTML = '';
     
+// [1] 선택지가 없는 장면 (자동 진행)
     if (!scene || !scene.options || scene.options.length === 0) {
-        if (scene && scene.autoNext) setTimeout(() => playScene(scene.autoNext), 800);
+        if (scene && (scene.autoNext || scene.chanceNext)) {
+            let nextId = scene.autoNext;
+            
+            // 트리거가 '0'이면 사용자가 모르게 뒤에서 주사위를 굴림
+            if (scene.triggerOpt === "0" && scene.chanceNext) {
+                nextId = getGachaResult(scene.chanceNext, scene.autoNext);
+            }
+            
+            if (nextId) {
+                // 0.8초 딜레이를 주어 자연스러운 채팅 흐름 연출
+                setTimeout(() => playScene(nextId), 800);
+            }
+        }
         return;
     }
-
     scene.options.forEach(opt => {
         const button = document.createElement('button');
         button.innerText = opt.label;
@@ -274,20 +286,24 @@ function showOptions(sceneId) {
             optionsElement.innerHTML = '';
             setTimeout(() => {
                 let nextId = opt.next;
+
+                // 선택지 기반 확률 트리거 체크 (사용자가 누른 번호와 트리거 번호가 같을 때)
+                if (scene.triggerOpt === opt.index && scene.chanceNext) {
+                    nextId = getGachaResult(scene.chanceNext, opt.next);
+                }
+
                 const nextScene = storyData[nextId];
+                if (!nextScene) return;
                 const isNextDivider = nextScene && nextScene.text && nextScene.text.trim().startsWith("---");
 
                 if (nextScene && (nextScene.text || nextScene.imageUrl) && !isNextDivider) {
                     const typing = showTyping();
                     setTimeout(() => {
                         if(typing && typing.parentNode) typing.parentNode.removeChild(typing);
-                        if (scene.triggerOpt === opt.index && scene.chanceNext) {
-                            nextId = getGachaResult(scene.chanceNext, opt.next);
-                        }
-                        if (storyData[nextId]) playScene(nextId);
+                            playScene(nextId);
                     }, 1000);
                 } else {
-                    if (storyData[nextId]) playScene(nextId);
+                    playScene(nextId);
                 }
             }, 500);
         };
@@ -332,5 +348,6 @@ function clearAllSaves() {
 document.addEventListener('DOMContentLoaded', () => {
     loadCharacterList();
 });
+
 
 
