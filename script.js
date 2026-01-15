@@ -194,12 +194,12 @@ function startChat(name, gid, photo) {
     chatWindow.innerHTML = '';
     document.getElementById('options').innerHTML = '';
     
-    loadStory(`${baseSheetUrl}${gid}`).then(() => {
+    loadStory(`${baseSheetUrl}${gid}`).then(async () => {
         if (historyData.length > 0) {
-            historyData.forEach(h => {
+            for (const h of historyData) {
                 let hImg = h.imageUrl || "";
                 if (hImg.startsWith('*')) hImg = ""; 
-                addMessage(h.text, h.sender, true, h.time, hImg);
+                await addMessage(h.text, h.sender, true, h.time, hImg, h.effect || "");
             });
         }
 
@@ -207,10 +207,10 @@ function startChat(name, gid, photo) {
         if (saved) {
             const parsed = JSON.parse(saved);
             if (parsed.messages && parsed.messages.length > 0) {
-                parsed.messages.forEach(m => {
+                for (const m of parsed.messages) {
                     let mImg = m.imageUrl || "";
                     if (mImg.startsWith('*')) mImg = ""; 
-                    addMessage(m.text, m.sender, true, m.time, mImg, m.effect || "");
+                    await addMessage(m.text, m.sender, true, m.time, mImg, m.effect || "");
                 });
                 showOptions(parsed.lastSceneId);
             } else {
@@ -240,7 +240,15 @@ async function loadStory(fullUrl) {
                 const effectValue = (cols[11] || "").trim().toLowerCase();
                 const imageUrl = (cols[14] || "").trim();
                 if (id < 0) {
-                    historyData.push({ id: id, text: cols[1], sender: cols[2] === 'me' ? 'me' : 'bot', time: timeValue, imageUrl: imageUrl });
+                    if (id < 0) {
+    historyData.push({ 
+        id: id, 
+        text: cols[1], 
+        sender: cols[2] === 'me' ? 'me' : 'bot', 
+        time: timeValue, 
+        imageUrl: imageUrl,
+        effect: effectValue 
+    });
                 } else {
                     const scene = { 
             text: cols[1], 
@@ -457,6 +465,7 @@ function clearAllSaves() {
 document.addEventListener('DOMContentLoaded', () => {
     loadCharacterList();
 });
+
 
 
 
