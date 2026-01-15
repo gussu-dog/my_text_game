@@ -240,15 +240,15 @@ async function loadStory(fullUrl) {
                 const effectValue = (cols[11] || "").trim().toLowerCase();
                 const imageUrl = (cols[14] || "").trim();
                 if (id < 0) {
-                    if (id < 0) {
-    historyData.push({ 
-        id: id, 
-        text: cols[1], 
-        sender: cols[2] === 'me' ? 'me' : 'bot', 
-        time: timeValue, 
-        imageUrl: imageUrl,
-        effect: effectValue 
-    });
+                    // ✨ 과거 기록 데이터 저장
+                    historyData.push({ 
+                        id: id, 
+                        text: cols[1], 
+                        sender: cols[2] === 'me' ? 'me' : 'bot', 
+                        time: timeValue, 
+                        imageUrl: imageUrl,
+                        effect: effectValue 
+                    });
                 } else {
                     const scene = { 
             text: cols[1], 
@@ -465,6 +465,7 @@ function clearAllSaves() {
 document.addEventListener('DOMContentLoaded', () => {
     loadCharacterList();
 });
+
 
 
 
